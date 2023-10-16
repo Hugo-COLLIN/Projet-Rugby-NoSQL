@@ -1,0 +1,66 @@
+@startuml
+
+class Evenement {
+  numeroEvenement
+  nomEvenement
+  dateEvenement
+  lieuEvenement
+}
+
+class Match {
+  numeroMatch
+  date
+  equipeRecevant
+  equipeReçue
+  pointsEquipeRecevant
+  pointsEquipeReçue
+  nombreSpectateurs
+}
+
+class Equipe {
+  codeEquipe
+  pays
+  couleurMaillot
+  nomEntraineur
+}
+
+class Joueur {
+  numeroJoueur
+  nom
+  prenom
+  poste
+}
+
+class Stade {
+  numeroStade
+  nom
+  ville
+  capacite
+}
+
+class Arbitre {
+  numeroArbitre
+  nom
+  prenom
+  nationalite
+}
+
+class Pays {
+  codePays
+  nomPays
+}
+
+class Poste {
+  numeroPoste
+  libelle
+}
+
+Evenement "1" -- "0..*" Match : contient
+Match "1" - "1..2" Equipe : oppose
+Equipe "1" --- "0..*" Joueur : a
+Match "1" -- "1" Stade : se déroule dans
+Match "1" -- "1" Arbitre : est arbitré par
+Pays "1" -- "1" Equipe : a
+Poste "1" - "0..*" Joueur : est occupé par
+
+@enduml

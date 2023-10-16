@@ -1,0 +1,49 @@
+{
+  "codeEquipe": "string",
+  "pays": {
+    "codePays": "string",
+    "nomPays": "string"
+  },
+  "couleurMaillot": "string",
+  "nomEntraineur": "string",
+  "joueurs": [
+    {
+      "numeroJoueur": "integer",
+      "nom": "string",
+      "prenom": "string",
+      "poste": {
+        "numeroPoste": "integer",
+        "libelle": "string"
+      }
+    }
+  ],
+  "matchs": [
+    {
+      "numeroMatch": "integer",
+      "date": "date",
+      "evenement": {
+        "numeroEvenement": "integer",
+        "nomEvenement": "string",
+        "dateEvenement": "date",
+        "lieuEvenement": "string"
+      },
+      "stade": {
+        "numeroStade": "integer",
+        "nom": "string",
+        "ville": "string",
+        "capacite": "integer"
+      },
+      "equipeRecevant": "string",
+      "equipeReçue": "string",
+      "nombrePoints": "integer",
+      "nombreEssais": "integer",
+      "arbitre": {
+        "numeroArbitre": "integer",
+        "nom": "string",
+        "prenom": "string",
+        "nationalite": "string"
+      },
+      "nombreSpectateurs": "integer"
+    }
+  ]
+}

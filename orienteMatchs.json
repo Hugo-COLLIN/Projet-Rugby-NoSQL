@@ -1,0 +1,48 @@
+{
+  "numeroMatch": "integer",
+  "date": "date",
+  "evenement": {
+    "numeroEvenement": "integer",
+    "nomEvenement": "string",
+    "dateEvenement": "date",
+    "lieuEvenement": "string"
+  },
+  "stade": {
+    "numeroStade": "integer",
+    "nom": "string",
+    "ville": "string",
+    "capacite": "integer"
+  },
+  "equipeRecevant": {
+    "codeEquipe": "string",
+    "nombrePoints": "integer",
+    "nombreEssais": "integer"
+  },
+  "equipeReçue": {
+    "codeEquipe": "string",
+    "nombrePoints": "integer",
+    "nombreEssais": "integer"
+  },
+  "arbitre": {
+    "numeroArbitre": "integer",
+    "nom": "string",
+    "prenom": "string",
+    "nationalite": "string"
+  },
+  "nombreSpectateurs": "integer",
+  "joueurs": [
+    {
+      "numeroJoueur": "integer",
+      "nom": "string",
+      "prenom": "string",
+      "poste": {
+        "numeroPoste": "integer",
+        "libelle": "string"
+      }
+    }
+  ],
+  "pays": {
+    "codePays": "string",
+    "nomPays": "string"
+  }
+}
