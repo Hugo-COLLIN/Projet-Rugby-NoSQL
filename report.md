@@ -1,6 +1,7 @@
 # Modélisation NoSQL de la coupe du monde de Rugby
 
-1. ![Diagramme UML](Diag.png)
+1. [Diagramme UML](Diag.puml)
+![Diagramme UML](Diag.png)
 
 2. Voici les structures JSON correspondantes:
    - [Orienté Matchs](orienteMatchs.json)
