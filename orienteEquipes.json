@@ -43,7 +43,16 @@
         "prenom": "string",
         "nationalite": "string"
       },
-      "nombreSpectateurs": "integer"
+      "nombreSpectateurs": "integer",
+      "performances": [
+        {
+          "numeroJoueur": "integer",
+          "tempsDeJeu": "integer",
+          "essaisMarques": "integer",
+          "pointsMarques": "integer",
+          "debutMatch": "boolean"
+        }
+      ]
     }
   ]
 }
