@@ -26,10 +26,10 @@ public class JavaMongoConnection {
             MongoCollection<Document> collection = sampleTrainingDB.getCollection("equipes");
 
 
-            q5a(collection, "ENG");
-            q5b(collection, "2023-09-22", 10);
-            q5c(collection, "Barnes");
-//            q5d(collection, "2023-09-22", "ENG", "ESP");
+//            q5a(collection, "ENG");
+//            q5b(collection, "2023-09-22", 10);
+//            q5c(collection, "Barnes");
+            q5d(collection, "2023-09-25", "ENG", "ESP");
 //            q5e(collection);
 //            q5f(collection);
 //            q5g(collection);
@@ -44,37 +44,38 @@ public class JavaMongoConnection {
         }
     }
 
-//    private static void q5d(MongoCollection<Document> collection, String dateD, String equipeE1, String equipeE2) {
-//        q5sep("d");
-//
-//        List<Bson> pipeline = Arrays.asList(
-//                Aggregates.match(Filters.eq("codeEquipe", equipeE1)), // Filtrer pour l'équipe E1
-//                Aggregates.unwind("$joueurs"), // Déconstruire les joueurs
-//                Aggregates.unwind("$matchs"), // Déconstruire les matchs
-//                Aggregates.match(
-//                        Filters.and(
-//                                Filters.eq("matchs.date", dateD),
-//                                Filters.or(
-//                                        Filters.eq("matchs.equipeRecevant", equipeE2),
-//                                        Filters.eq("matchs.equipeReçue", equipeE2)
-//                                ),
-//                                Filters.eq("matchs.performances.debutMatch", true),
-//                                Filters.eq("matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")
-//                        )
-//                ), // Filtrer par date, équipe E2, début du match et numéro de joueur
-//                Aggregates.project(
-//                        fields(
-//                                excludeId(),
-//                                computed("nom", "$joueurs.nom"),
-//                                computed("prenom", "$joueurs.prenom")
-//                        )
-//                ) // Inclure uniquement le nom et le prénom du joueur
-//        );
-//
-//        displayResult(collection, pipeline);
-//
-//        sep();
-//    }
+    private static void q5d(MongoCollection<Document> collection, String dateD, String equipeE1, String equipeE2) {
+        q5sep("d");
+
+        List<Bson> pipeline = Arrays.asList(
+                Aggregates.match(Filters.eq("codeEquipe", equipeE1)), // Filtrer pour l'équipe E1
+                Aggregates.unwind("$joueurs"), // Déconstruire les joueurs
+                Aggregates.unwind("$matchs"), // Déconstruire les matchs
+                Aggregates.unwind("$matchs.performances"), // Déconstruire les performances
+                Aggregates.match(
+                        Filters.and(
+                                Filters.eq("matchs.date", dateD),
+                                Filters.or(
+                                        Filters.eq("matchs.equipeRecevant", equipeE2),
+                                        Filters.eq("matchs.equipeReçue", equipeE2)
+                                ),
+                                Filters.eq("matchs.performances.debutMatch", true),
+                                Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))
+                        )
+                ), // Filtrer par date, équipe E2, début du match et numéro de joueur
+                Aggregates.project(
+                        fields(
+                                excludeId(),
+                                computed("nom", "$joueurs.nom"),
+                                computed("prenom", "$joueurs.prenom")
+                        )
+                ) // Inclure uniquement le nom et le prénom du joueur
+        );
+
+        displayResult(collection, pipeline);
+
+        sep();
+    }
 
     private static void q5c(MongoCollection<Document> collection, String arbitreA) {
         q5sep("c");
