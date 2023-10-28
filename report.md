@@ -13,7 +13,9 @@
    De plus, les informations sur les matchs sont également incluses dans ce document, ce qui permet de répondre aux questions concernant les matchs.
 
 4. Voici les données de la base ProjetRugby, collection equipes: [ProjetRugby.equipes](ProjetRugby.equipes.json)
+TODO retélécharger la base
 
 5. Voir les fichiers source 
   a. 
   ![Q5.a](captures/Q5.a.png)
+
