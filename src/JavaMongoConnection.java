@@ -64,23 +64,6 @@ public class JavaMongoConnection {
                 aggregatesProjectIncludeFields("nom", "prenom", "totalMatchs", "totalEssais", "totalPoints") // Inclure uniquement les champs nécessaires
 
         );
-//        List<Bson> pipeline = Arrays.asList(
-//                Aggregates.match(Filters.eq("codeEquipe", equipeE)), // Filtrer pour l'équipe E
-//                Aggregates.unwind("$joueurs"), // Déconstruire les joueurs
-//                Aggregates.unwind("$matchs"), // Déconstruire les matchs
-//                Aggregates.unwind("$matchs.performances"), // Déconstruire les performances
-//                Aggregates.match(
-//                        Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))
-//                ), // Filtrer par numéro de joueur
-//                Aggregates.group("$joueurs.numeroJoueur", // Grouper par numéro de joueur
-//                        sum("totalMatchs", 1),
-//                        sum("totalEssais", "$matchs.performances.essaisMarques"),
-//                        sum("totalPoints", "$matchs.performances.pointsMarques")
-//                ), // Aggréger les valeurs
-//                Aggregates.project(fields(
-//                        include("_id", "totalMatchs", "totalEssais", "totalPoints") // Inclure uniquement les champs nécessaires
-//                ))
-//        );
 
         displayQuestion("f", collection, pipeline);
     }
