@@ -2,6 +2,7 @@
  * Hugo COLLIN - /10/2023
  */
 
+import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Field;
 import com.mongodb.client.model.Filters;
@@ -30,8 +31,8 @@ public class JavaMongoConnection {
 //            q5b(collection, "2023-09-22", 10);
 //            q5c(collection, "Barnes");
 //            q5d(collection, "2023-09-25", "ENG", "ESP");
-            q5e(collection, "ENG");
-//            q5f(collection);
+//            q5e(collection, "ENG");
+            q5f(collection, "ENG");
 //            q5g(collection);
 //            q5h(collection);
 //            q5i(collection);
@@ -44,108 +45,48 @@ public class JavaMongoConnection {
         }
     }
 
-//    private static void q5e(MongoCollection<Document> collection, String equipeE) {
-//        List<Document> results = collection.find(Filters.eq("codeEquipe", equipeE)).into(new ArrayList<>());
-//
-//        for (Document result : results) {
-//            List<Document> joueurs = (List<Document>) result.get("joueurs");
-//            List<Document> matchs = (List<Document>) result.get("matchs");
-//
-//            Map<Integer, Document> joueurMap = new HashMap<>();
-//            for (Document joueur : joueurs) {
-//                joueurMap.put(joueur.getInteger("numeroJoueur"), joueur);
-//            }
-//
-//            for (Document match : matchs) {
-//                List<Document> performances = (List<Document>) match.get("performances");
-//                for (Document performance : performances) {
-//                    if (!performance.getBoolean("debutMatch")) {
-//                        Document joueur = joueurMap.get(performance.getInteger("numeroJoueur"));
-//                        if (joueur != null) {
-//                            System.out.println("Nom: " + joueur.getString("nom") + ", Prénom: " + joueur.getString("prenom"));
-//                            System.out.println("Performance: " + performance.toJson());
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
+    private static void q5f(MongoCollection<Document> collection, String equipeE) {
+        List<Bson> pipeline = Arrays.asList(
+                Aggregates.match(Filters.eq("codeEquipe", equipeE)), // Filtrer pour l'équipe E
+                Aggregates.unwind("$joueurs"), // Déconstruire les joueurs
+                Aggregates.unwind("$matchs"), // Déconstruire les matchs
+                Aggregates.unwind("$matchs.performances"), // Déconstruire les performances
+                Aggregates.match(
+                        Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))
+                ), // Filtrer par numéro de joueur
+                Aggregates.group("$joueurs.numeroJoueur", // Grouper par numéro de joueur
+                        Accumulators.first("nom", "$joueurs.nom"),
+                        Accumulators.first("prenom", "$joueurs.prenom"),
+                        Accumulators.sum("totalMatchs", 1),
+                        Accumulators.sum("totalEssais", "$matchs.performances.essaisMarques"),
+                        Accumulators.sum("totalPoints", "$matchs.performances.pointsMarques")
+                ), // Aggréger les valeurs
+                aggregatesProjectIncludeFields("nom", "prenom", "totalMatchs", "totalEssais", "totalPoints") // Inclure uniquement les champs nécessaires
 
-
-//    private static void q5e(MongoCollection<Document> collection, String equipeE) {
+        );
 //        List<Bson> pipeline = Arrays.asList(
 //                Aggregates.match(Filters.eq("codeEquipe", equipeE)), // Filtrer pour l'équipe E
+//                Aggregates.unwind("$joueurs"), // Déconstruire les joueurs
 //                Aggregates.unwind("$matchs"), // Déconstruire les matchs
 //                Aggregates.unwind("$matchs.performances"), // Déconstruire les performances
-//                Aggregates.match(Filters.eq("matchs.performances.debutMatch", false)), // Filtrer pour les performances où debutMatch est false
-//                // Inclure uniquement les champs de l'objet performances
-//                aggregatesProjectIncludeFields("matchs.performances.numeroJoueur", "matchs.performances.tempsDeJeu", "matchs.performances.essaisMarques", "matchs.performances.pointsMarques")
+//                Aggregates.match(
+//                        Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))
+//                ), // Filtrer par numéro de joueur
+//                Aggregates.group("$joueurs.numeroJoueur", // Grouper par numéro de joueur
+//                        sum("totalMatchs", 1),
+//                        sum("totalEssais", "$matchs.performances.essaisMarques"),
+//                        sum("totalPoints", "$matchs.performances.pointsMarques")
+//                ), // Aggréger les valeurs
+//                Aggregates.project(fields(
+//                        include("_id", "totalMatchs", "totalEssais", "totalPoints") // Inclure uniquement les champs nécessaires
+//                ))
 //        );
-//
-//        displayQuestion("e", collection, pipeline);
-//    }
 
-//    private static void q5e(MongoCollection<Document> collection, String equipeE) {
-//        List<Document> results = collection.find(
-//                Filters.and(
-//                        Filters.eq("codeEquipe", equipeE),
-//                        Filters.elemMatch("matchs.performances", Filters.eq("debutMatch", false))
-//                )
-//        ).into(new ArrayList<>());
-//
-//        for (Document result : results) {
-//            List<Document> matchs = (List<Document>) result.get("matchs");
-//            for (Document match : matchs) {
-//                List<Document> performances = (List<Document>) match.get("performances");
-//                for (Document performance : performances) {
-//                    if (!performance.getBoolean("debutMatch")) {
-//                        System.out.println(performance);
-//                    }
-//                }
-//            }
-//        }
-//    }
+        displayQuestion("f", collection, pipeline);
+    }
 
 
     private static void q5e(MongoCollection<Document> collection, String equipeE) {
-//        List<Bson> pipeline = Arrays.asList(
-//                Aggregates.match(Filters.eq("codeEquipe", equipeE)),
-//                Aggregates.unwind("$joueurs"),
-//                Aggregates.unwind("$matchs"),
-//                Aggregates.unwind("$matchs.performances"),
-//                Aggregates.addFields(new Field<>("isSamePlayer", new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))),
-//                Aggregates.match(
-//                        Filters.and(
-//                                Filters.eq("matchs.performances.debutMatch", false),
-//                                Filters.eq("isSamePlayer", true)
-//                        )
-//                )
-//        );
-
-//        List<Bson> pipeline = Arrays.asList(
-//                Aggregates.match(Filters.eq("codeEquipe", equipeE)), // Filtrer pour l'équipe E
-//                Aggregates.unwind("$joueurs"), // Déconstruire les joueurs
-//                Aggregates.unwind("$matchs"), // Déconstruire les matchs
-//                Aggregates.unwind("$matchs.performances"), // Déconstruire les performances
-//                Aggregates.match(
-//                        Filters.and(
-//                                Filters.eq("matchs.performances.debutMatch", false),
-//                                Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))
-//                        )
-//                ), // Filtrer par début du match et numéro de joueur
-//                // Ajouter cette ligne pour déboguer
-//                Aggregates.match(new Document())
-//        );
-
-//        List<Bson> pipeline = Arrays.asList(
-//                Aggregates.match(Filters.eq("codeEquipe", equipeE)), // Filtrer pour l'équipe E
-//                Aggregates.unwind("$joueurs"), // Déconstruire les joueurs
-//                Aggregates.unwind("$matchs"), // Déconstruire les matchs
-//                Aggregates.unwind("$matchs.performances"), // Déconstruire les performances
-//                // Ajouter cette ligne pour déboguer
-//                Aggregates.match(new Document())
-//        );
-
         List<Bson> pipeline = Arrays.asList(
                 Aggregates.match(Filters.eq("codeEquipe", equipeE)), // Filtrer pour l'équipe E
                 Aggregates.unwind("$joueurs"), // Déconstruire les joueurs
@@ -162,50 +103,6 @@ public class JavaMongoConnection {
 
         displayQuestion("e", collection, pipeline);
     }
-
-//    private static void q5e(MongoCollection<Document> collection, String equipeE) {
-////        List<Bson> pipeline = Arrays.asList(
-////                Aggregates.match(Filters.eq("codeEquipe", equipeE)), // Filtrer pour l'équipe E
-////                Aggregates.unwind("$joueurs"), // Déconstruire les joueurs
-////                Aggregates.unwind("$matchs"), // Déconstruire les matchs
-////                Aggregates.match(
-////                        Filters.and(
-////                                Filters.eq("matchs.performances.debutMatch", false),
-////                                Filters.eq("matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")
-////                        )
-////                )//, // Filtrer par début du match et numéro de joueur
-//////                Aggregates.project(
-//////                        fields(
-//////                                excludeId(),
-//////                                computed("nom", "$joueurs.nom"),
-//////                                computed("prenom", "$joueurs.prenom")
-//////                        )
-//////                )
-////                // Inclure uniquement le nom et le prénom du joueur
-//////                aggregatesProjectIncludeFields("joueurs.nom", "joueurs.prenom")
-////        );
-//        List<Bson> pipeline = Arrays.asList(
-//                Aggregates.match(Filters.eq("codeEquipe", equipeE)), // Filtrer pour l'équipe E
-//                Aggregates.unwind("$joueurs"), // Déconstruire les joueurs
-//                Aggregates.unwind("$matchs"), // Déconstruire les matchs
-//                Aggregates.unwind("$matchs.performances")//, // Déconstruire les performances
-////                Aggregates.match(
-////                        Filters.and(
-////                                Filters.eq("matchs.performances.debutMatch", false),
-////                                Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))
-////                        )
-////                ), // Filtrer par début du match et numéro de joueur
-////                Aggregates.project(
-////                        fields(
-////                                excludeId(),
-////                                computed("nom", "$joueurs.nom"),
-////                                computed("prenom", "$joueurs.prenom")
-////                        )
-////                ) // Inclure uniquement le nom et le prénom du joueur
-//        );
-//
-//        displayQuestion("e", collection, pipeline);
-//    }
 
     private static void q5d(MongoCollection<Document> collection, String dateD, String equipeE1, String equipeE2) {
         List<Bson> pipeline = Arrays.asList(
