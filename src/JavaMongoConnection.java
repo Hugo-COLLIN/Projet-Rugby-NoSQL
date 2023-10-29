@@ -61,13 +61,7 @@ public class JavaMongoConnection {
                             Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))
                     )
             ), // Filtrer par date, équipe E2, début du match et numéro de joueur
-            Aggregates.project(
-                    fields(
-                            excludeId(),
-                            computed("nom", "$joueurs.nom"),
-                            computed("prenom", "$joueurs.prenom")
-                    )
-            ) // Inclure uniquement le nom et le prénom du joueur
+            aggregatesProjectIncludeFields("joueurs.nom", "joueurs.prenom") // Inclure uniquement le nom et le prénom du joueur
         );
 
         displayQuestion("d", collection, pipeline);
@@ -82,14 +76,8 @@ public class JavaMongoConnection {
                                 Filters.eq("matchs.arbitre.nom", arbitreA)
                         )
                 ), // Filtrer par équipe recevant et nom de l'arbitre
-                Aggregates.project(
-                        fields(
-                                excludeId(),
-                                computed("nom", "$matchs.arbitre.nom"),
-                                computed("prenom", "$matchs.arbitre.prenom"),
-                                computed("nationalite", "$matchs.arbitre.nationalite")
-                        )
-                ) // Inclure uniquement l'objet arbitre
+                // Inclure uniquement l'objet arbitre
+                aggregatesProjectIncludeFields("matchs.arbitre.nom", "matchs.arbitre.prenom", "matchs.arbitre.nationalite")
         );
 
         displayQuestion("c", collection, pipeline);
@@ -104,23 +92,11 @@ public class JavaMongoConnection {
                                 Filters.gt("matchs.nombrePoints", pointsP)
                         )
                 ), // Filtrer par date et nombre de points
-                Aggregates.project(
-                        fields(
-                                //include au lieu de computed?
-                                excludeId(),
-                                computed("numeroMatch", "$matchs.numeroMatch"),
-                                computed("date", "$matchs.date"),
-                                computed("evenement", "$matchs.evenement"),
-                                computed("stade", "$matchs.stade"),
-                                computed("equipeRecevant", "$matchs.equipeRecevant"),
-                                computed("equipeReçue", "$matchs.equipeReçue"),
-                                computed("nombrePoints", "$matchs.nombrePoints"),
-                                computed("nombreEssais", "$matchs.nombreEssais"),
-                                computed("arbitre", "$matchs.arbitre"),
-                                computed("nombreSpectateurs", "$matchs.nombreSpectateurs"),
-                                computed("performances", "$matchs.performances")
-                        )
-                ) // Inclure uniquement l'objet match
+                // Inclure uniquement les champs de l'objet match
+                aggregatesProjectIncludeFields("matchs.numeroMatch", "matchs.date", "matchs.evenement",
+                                        "matchs.stade", "matchs.equipeRecevant", "matchs.equipeReçue",
+                                        "matchs.nombrePoints", "matchs.nombreEssais", "matchs.arbitre",
+                                        "matchs.nombreSpectateurs", "matchs.performances")
         );
 
         displayQuestion("b", collection, pipeline);
@@ -145,6 +121,15 @@ public class JavaMongoConnection {
 
 
         displayQuestion("a", collection, pipeline);
+    }
+
+    private static Bson aggregatesProjectIncludeFields(String ...fieldsNames) {
+        return Aggregates.project(
+                fields(
+                        excludeId(),
+                        include(fieldsNames)
+                )
+        );
     }
 
     private static void displayQuestion(String q, MongoCollection<Document> collection, List<Bson> pipeline) {
