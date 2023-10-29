@@ -4,7 +4,6 @@
 
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Field;
 import com.mongodb.client.model.Filters;
 import org.bson.*;
 import org.bson.conversions.Bson;
@@ -33,7 +32,7 @@ public class JavaMongoConnection {
 //            q5d(collection, "2023-09-25", "ENG", "ESP");
 //            q5e(collection, "ENG");
             q5f(collection, "ENG");
-//            q5g(collection);
+            q5g(collection, "ENG", "ESP", "FRA");
 //            q5h(collection);
 //            q5i(collection);
 //            q5j(collection);
@@ -44,6 +43,35 @@ public class JavaMongoConnection {
             mongoClient.close();
         }
     }
+
+    private static void q5g(MongoCollection<Document> collection, String equipeE1, String equipeE2, String equipeE3) {
+        List<Bson> pipeline = Arrays.asList(
+                Aggregates.match(Filters.eq("codeEquipe", equipeE1)),
+                Aggregates.unwind("$joueurs"),
+                Aggregates.unwind("$matchs"),
+                Aggregates.unwind("$matchs.performances"),
+                Aggregates.match(
+                        Filters.and(
+                                Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur"))),
+                                Filters.or(
+                                        Filters.eq("matchs.equipeRecevant", equipeE2),
+                                        Filters.eq("matchs.equipeRecevant", equipeE3),
+                                        Filters.eq("matchs.equipeReçue", equipeE2),
+                                        Filters.eq("matchs.equipeReçue", equipeE3)
+                                )
+                        )
+                ),
+                Aggregates.group("$joueurs.numeroJoueur",
+                        Accumulators.first("nom", "$joueurs.nom"),
+                        Accumulators.first("prenom", "$joueurs.prenom")
+                ),
+                aggregatesProjectIncludeFields("nom", "prenom")
+
+        );
+
+        displayQuestionJson("g", collection, pipeline);
+    }
+
 
     private static void q5f(MongoCollection<Document> collection, String equipeE) {
         List<Bson> pipeline = Arrays.asList(
@@ -65,7 +93,7 @@ public class JavaMongoConnection {
 
         );
 
-        displayQuestion("f", collection, pipeline);
+        displayQuestionJson("f", collection, pipeline);
     }
 
 
@@ -84,7 +112,7 @@ public class JavaMongoConnection {
                 aggregatesProjectIncludeFields("joueurs.nom", "joueurs.prenom") // Inclure uniquement le nom et le prénom du joueur
         );
 
-        displayQuestion("e", collection, pipeline);
+        displayQuestionJson("e", collection, pipeline);
     }
 
     private static void q5d(MongoCollection<Document> collection, String dateD, String equipeE1, String equipeE2) {
@@ -107,7 +135,7 @@ public class JavaMongoConnection {
             aggregatesProjectIncludeFields("joueurs.nom", "joueurs.prenom") // Inclure uniquement le nom et le prénom du joueur
         );
 
-        displayQuestion("d", collection, pipeline);
+        displayQuestionJson("d", collection, pipeline);
     }
 
     private static void q5c(MongoCollection<Document> collection, String arbitreA) {
@@ -123,7 +151,7 @@ public class JavaMongoConnection {
                 aggregatesProjectIncludeFields("matchs.arbitre.nom", "matchs.arbitre.prenom", "matchs.arbitre.nationalite")
         );
 
-        displayQuestion("c", collection, pipeline);
+        displayQuestionJson("c", collection, pipeline);
     }
 
     private static void q5b(MongoCollection<Document> collection, String dateD, int pointsP) {
@@ -142,7 +170,7 @@ public class JavaMongoConnection {
                                         "matchs.nombreSpectateurs", "matchs.performances")
         );
 
-        displayQuestion("b", collection, pipeline);
+        displayQuestionJson("b", collection, pipeline);
     }
 
     private static void q5a(MongoCollection<Document> collection, String equipeE) {
@@ -163,7 +191,7 @@ public class JavaMongoConnection {
         );
 
 
-        displayQuestion("a", collection, pipeline);
+        displayQuestionJson("a", collection, pipeline);
     }
 
     private static Bson aggregatesProjectIncludeFields(String ...fieldsNames) {
@@ -175,7 +203,7 @@ public class JavaMongoConnection {
         );
     }
 
-    private static void displayQuestion(String q, MongoCollection<Document> collection, List<Bson> pipeline) {
+    private static void displayQuestionJson(String q, MongoCollection<Document> collection, List<Bson> pipeline) {
         q5sep(q);
         displayResult(collection, pipeline);
         sep();
