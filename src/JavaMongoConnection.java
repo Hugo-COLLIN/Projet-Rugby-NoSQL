@@ -45,41 +45,35 @@ public class JavaMongoConnection {
     }
 
     private static void q5d(MongoCollection<Document> collection, String dateD, String equipeE1, String equipeE2) {
-        q5sep("d");
-
         List<Bson> pipeline = Arrays.asList(
-                Aggregates.match(Filters.eq("codeEquipe", equipeE1)), // Filtrer pour l'équipe E1
-                Aggregates.unwind("$joueurs"), // Déconstruire les joueurs
-                Aggregates.unwind("$matchs"), // Déconstruire les matchs
-                Aggregates.unwind("$matchs.performances"), // Déconstruire les performances
-                Aggregates.match(
-                        Filters.and(
-                                Filters.eq("matchs.date", dateD),
-                                Filters.or(
-                                        Filters.eq("matchs.equipeRecevant", equipeE2),
-                                        Filters.eq("matchs.equipeReçue", equipeE2)
-                                ),
-                                Filters.eq("matchs.performances.debutMatch", true),
-                                Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))
-                        )
-                ), // Filtrer par date, équipe E2, début du match et numéro de joueur
-                Aggregates.project(
-                        fields(
-                                excludeId(),
-                                computed("nom", "$joueurs.nom"),
-                                computed("prenom", "$joueurs.prenom")
-                        )
-                ) // Inclure uniquement le nom et le prénom du joueur
+            Aggregates.match(Filters.eq("codeEquipe", equipeE1)), // Filtrer pour l'équipe E1
+            Aggregates.unwind("$joueurs"), // Déconstruire les joueurs
+            Aggregates.unwind("$matchs"), // Déconstruire les matchs
+            Aggregates.unwind("$matchs.performances"), // Déconstruire les performances
+            Aggregates.match(
+                    Filters.and(
+                            Filters.eq("matchs.date", dateD),
+                            Filters.or(
+                                    Filters.eq("matchs.equipeRecevant", equipeE2),
+                                    Filters.eq("matchs.equipeReçue", equipeE2)
+                            ),
+                            Filters.eq("matchs.performances.debutMatch", true),
+                            Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))
+                    )
+            ), // Filtrer par date, équipe E2, début du match et numéro de joueur
+            Aggregates.project(
+                    fields(
+                            excludeId(),
+                            computed("nom", "$joueurs.nom"),
+                            computed("prenom", "$joueurs.prenom")
+                    )
+            ) // Inclure uniquement le nom et le prénom du joueur
         );
 
-        displayResult(collection, pipeline);
-
-        sep();
+        displayQuestion("d", collection, pipeline);
     }
 
     private static void q5c(MongoCollection<Document> collection, String arbitreA) {
-        q5sep("c");
-
         List<Bson> pipeline = Arrays.asList(
                 Aggregates.unwind("$matchs"), // Déconstruire les matchs
                 Aggregates.match(
@@ -98,14 +92,10 @@ public class JavaMongoConnection {
                 ) // Inclure uniquement l'objet arbitre
         );
 
-        displayResult(collection, pipeline);
-
-        sep();
+        displayQuestion("c", collection, pipeline);
     }
 
     private static void q5b(MongoCollection<Document> collection, String dateD, int pointsP) {
-        q5sep("b");
-
         List<Bson> pipeline = Arrays.asList(
                 Aggregates.unwind("$matchs"), // Déconstruire les matchs
                 Aggregates.match(
@@ -116,6 +106,7 @@ public class JavaMongoConnection {
                 ), // Filtrer par date et nombre de points
                 Aggregates.project(
                         fields(
+                                //include au lieu de computed?
                                 excludeId(),
                                 computed("numeroMatch", "$matchs.numeroMatch"),
                                 computed("date", "$matchs.date"),
@@ -132,14 +123,10 @@ public class JavaMongoConnection {
                 ) // Inclure uniquement l'objet match
         );
 
-        displayResult(collection, pipeline);
-
-        sep();
+        displayQuestion("b", collection, pipeline);
     }
 
     private static void q5a(MongoCollection<Document> collection, String equipeE) {
-        q5sep("a");
-
         List<Bson> pipeline = Arrays.asList(
                 Aggregates.match(Filters.eq("codeEquipe", equipeE)), // Filtrer pour l'équipe E
                 Aggregates.unwind("$matchs"), // Déconstruire les matchs
@@ -157,8 +144,12 @@ public class JavaMongoConnection {
         );
 
 
-        displayResult(collection, pipeline);
+        displayQuestion("a", collection, pipeline);
+    }
 
+    private static void displayQuestion(String q, MongoCollection<Document> collection, List<Bson> pipeline) {
+        q5sep(q);
+        displayResult(collection, pipeline);
         sep();
     }
 
