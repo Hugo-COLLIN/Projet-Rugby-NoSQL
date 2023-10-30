@@ -59,8 +59,8 @@ public class JavaMongoConnection {
                 Aggregates.unwind("$matchs"),
                 Aggregates.unwind("$matchs.performances"),
                 Aggregates.group("$matchs.performances.numeroJoueur",
-                        Accumulators.first("nom", "$joueurs.nom"),
-                        Accumulators.first("prenom", "$joueurs.prenom"),
+                        Accumulators.first("nom", new Document("$arrayElemAt", Arrays.asList("$joueurs.nom", 0))),
+                        Accumulators.first("prenom", new Document("$arrayElemAt", Arrays.asList("$joueurs.prenom", 0))),
                         Accumulators.sum("totalEssais", "$matchs.performances.essaisMarques")
                 ),
                 Aggregates.sort(Sorts.descending("totalEssais")),
@@ -72,8 +72,8 @@ public class JavaMongoConnection {
                 Aggregates.unwind("$matchs"),
                 Aggregates.unwind("$matchs.performances"),
                 Aggregates.group("$matchs.performances.numeroJoueur",
-                        Accumulators.first("nom", "$joueurs.nom"),
-                        Accumulators.first("prenom", "$joueurs.prenom"),
+                        Accumulators.first("nom", new Document("$arrayElemAt", Arrays.asList("$joueurs.nom", 0))),
+                        Accumulators.first("prenom", new Document("$arrayElemAt", Arrays.asList("$joueurs.prenom", 0))),
                         Accumulators.sum("totalPoints", "$matchs.performances.pointsMarques")
                 ),
                 Aggregates.sort(Sorts.descending("totalPoints")),
@@ -81,10 +81,36 @@ public class JavaMongoConnection {
                 includeFields("nom", "prenom", "totalPoints")
         );
 
+//        List<Bson> pipelineEssais = Arrays.asList(
+//                Aggregates.unwind("$matchs"),
+//                Aggregates.unwind("$matchs.performances"),
+//                Aggregates.group("$matchs.performances.numeroJoueur",
+//                        Accumulators.first("nom", "$joueurs.nom"),
+//                        Accumulators.first("prenom", "$joueurs.prenom"),
+//                        Accumulators.sum("totalEssais", "$matchs.performances.essaisMarques")
+//                ),
+//                Aggregates.sort(Sorts.descending("totalEssais")),
+//                Aggregates.limit(1),
+//                includeFields("nom", "prenom", "totalEssais")
+//        );
+//
+//        List<Bson> pipelinePoints = Arrays.asList(
+//                Aggregates.unwind("$matchs"),
+//                Aggregates.unwind("$matchs.performances"),
+//                Aggregates.group("$matchs.performances.numeroJoueur",
+//                        Accumulators.first("nom", "$joueurs.nom"),
+//                        Accumulators.first("prenom", "$joueurs.prenom"),
+//                        Accumulators.sum("totalPoints", "$matchs.performances.pointsMarques")
+//                ),
+//                Aggregates.sort(Sorts.descending("totalPoints")),
+//                Aggregates.limit(1),
+//                includeFields("nom", "prenom", "totalPoints")
+//        );
+
         sepQ5("j");
-        System.out.println("Essais");
+        System.out.println("Essais:");
         displayResult(collection, pipelineEssais);
-        System.out.println("Points");
+        System.out.println("Points:");
         displayResult(collection, pipelinePoints);
         sep();
     }
