@@ -2,14 +2,12 @@
  * Hugo COLLIN - /10/2023
  */
 
-import com.mongodb.client.model.Accumulators;
-import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Sorts;
+import com.mongodb.client.model.*;
 import org.bson.*;
 import org.bson.conversions.Bson;
 import com.mongodb.client.*;
 import org.bson.json.JsonWriterSettings;
+import org.bson.types.ObjectId;
 
 import java.util.*;
 
@@ -36,8 +34,8 @@ public class JavaMongoConnection {
 //            q5g(collection, "ENG", "ESP", "FRA");
 //            q5h(collection, "ENG");
 //            q5i(collection, "ENG");
-            q5j(collection);
-//            q5k(collection);
+//            q5j(collection);
+            q5k(collection, 1, new Document("nom", "Bogota").append("prenom", "Andy").append("nationalite", "ENG"));
 
 
 
@@ -45,8 +43,16 @@ public class JavaMongoConnection {
         }
     }
 
+    private static void q5k(MongoCollection<Document> collection, int matchId, Document referee) {
+        Bson filter = Filters.eq("matchs.numeroMatch", matchId);
+        Bson update = Updates.set("matchs.$.arbitre", referee);
+        collection.updateOne(filter, update);
+    }
+
+
 //    private static void q5k(MongoCollection<Document> collection, String matchId, Document referee) {
 //        Document match = collection.find(Filters.eq("_id", new ObjectId(matchId))).first();
+//        assert match != null;
 //        if (!match.get("equipe1").equals(referee.get("nationalite")) && !match.get("equipe2").equals(referee.get("nationalite"))) {
 //            collection.updateOne(Filters.eq("_id", new ObjectId(matchId)), Updates.set("**arbitre", referee));
 //        }
@@ -80,32 +86,6 @@ public class JavaMongoConnection {
                 Aggregates.limit(1),
                 includeFields("nom", "prenom", "totalPoints")
         );
-
-//        List<Bson> pipelineEssais = Arrays.asList(
-//                Aggregates.unwind("$matchs"),
-//                Aggregates.unwind("$matchs.performances"),
-//                Aggregates.group("$matchs.performances.numeroJoueur",
-//                        Accumulators.first("nom", "$joueurs.nom"),
-//                        Accumulators.first("prenom", "$joueurs.prenom"),
-//                        Accumulators.sum("totalEssais", "$matchs.performances.essaisMarques")
-//                ),
-//                Aggregates.sort(Sorts.descending("totalEssais")),
-//                Aggregates.limit(1),
-//                includeFields("nom", "prenom", "totalEssais")
-//        );
-//
-//        List<Bson> pipelinePoints = Arrays.asList(
-//                Aggregates.unwind("$matchs"),
-//                Aggregates.unwind("$matchs.performances"),
-//                Aggregates.group("$matchs.performances.numeroJoueur",
-//                        Accumulators.first("nom", "$joueurs.nom"),
-//                        Accumulators.first("prenom", "$joueurs.prenom"),
-//                        Accumulators.sum("totalPoints", "$matchs.performances.pointsMarques")
-//                ),
-//                Aggregates.sort(Sorts.descending("totalPoints")),
-//                Aggregates.limit(1),
-//                includeFields("nom", "prenom", "totalPoints")
-//        );
 
         sepQ5("j");
         System.out.println("Essais:");
