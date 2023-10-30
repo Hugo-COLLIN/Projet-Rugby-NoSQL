@@ -35,7 +35,7 @@ public class JavaMongoConnection {
 //            q5h(collection, "ENG");
 //            q5i(collection, "ENG");
 //            q5j(collection);
-            q5k(collection, 1, new Document("nom", "Bogota").append("prenom", "Andy").append("nationalite", "ENG"));
+            q5k(collection, 2, new Document("nom", "Plon").append("prenom", "Bagara").append("nationalite", "ENG"));
 
 
 
@@ -44,10 +44,29 @@ public class JavaMongoConnection {
     }
 
     private static void q5k(MongoCollection<Document> collection, int matchId, Document referee) {
-        Bson filter = Filters.eq("matchs.numeroMatch", matchId);
-        Bson update = Updates.set("matchs.$.arbitre", referee);
-        collection.updateOne(filter, update);
+        Document team = collection.find(Filters.elemMatch("matchs", Filters.eq("numeroMatch", matchId))).first();
+        assert team != null;
+        List<Document> matchs = (List<Document>) team.get("matchs");
+        Document match = matchs.stream().filter(m -> m.getInteger("numeroMatch") == matchId).findFirst().orElse(null);
+        assert match != null;
+        String equipeRecevant = match.getString("equipeRecevant");
+        String equipeRecue = match.getString("equipeReçue");
+        String nationaliteArbitre = referee.getString("nationalite");
+
+        if (!equipeRecevant.equals(nationaliteArbitre) && !equipeRecue.equals(nationaliteArbitre)) {
+            Bson filter = Filters.and(Filters.eq("matchs.numeroMatch", matchId), Filters.or(Filters.ne("equipeRecevant", nationaliteArbitre), Filters.ne("equipeReçue", nationaliteArbitre)));
+            Bson update = Updates.set("matchs.$.arbitre", referee);
+            collection.updateOne(filter, update);
+        }
     }
+
+
+
+//    private static void q5k(MongoCollection<Document> collection, int matchId, Document referee) {
+//        Bson filter = Filters.eq("matchs.numeroMatch", matchId);
+//        Bson update = Updates.set("matchs.$.arbitre", referee);
+//        collection.updateOne(filter, update);
+//    }
 
 
 //    private static void q5k(MongoCollection<Document> collection, String matchId, Document referee) {
