@@ -34,9 +34,9 @@ public class JavaMongoConnection {
 //            q5e(collection, "ENG");
 //            q5f(collection, "ENG");
 //            q5g(collection, "ENG", "ESP", "FRA");
-            q5h(collection, "ENG");
+//            q5h(collection, "ENG");
 //            q5i(collection, "ENG");
-//            q5j(collection);
+            q5j(collection);
 //            q5k(collection);
 
 
@@ -54,44 +54,114 @@ public class JavaMongoConnection {
 
 
 
+    public static void q5j(MongoCollection<Document> collection) {
+        List<Bson> pipelineEssais = Arrays.asList(
+                Aggregates.unwind("$matchs"),
+                Aggregates.unwind("$matchs.performances"),
+                Aggregates.group("$matchs.performances.numeroJoueur",
+                        Accumulators.first("nom", "$joueurs.nom"),
+                        Accumulators.first("prenom", "$joueurs.prenom"),
+                        Accumulators.sum("totalEssais", "$matchs.performances.essaisMarques")
+                ),
+                Aggregates.sort(Sorts.descending("totalEssais")),
+                Aggregates.limit(1),
+                includeFields("nom", "prenom", "totalEssais")
+        );
 
-    //TODO show 2 diffrent player, 1 for each criteria
-    private static void q5j(MongoCollection<Document> collection) {
+        List<Bson> pipelinePoints = Arrays.asList(
+                Aggregates.unwind("$matchs"),
+                Aggregates.unwind("$matchs.performances"),
+                Aggregates.group("$matchs.performances.numeroJoueur",
+                        Accumulators.first("nom", "$joueurs.nom"),
+                        Accumulators.first("prenom", "$joueurs.prenom"),
+                        Accumulators.sum("totalPoints", "$matchs.performances.pointsMarques")
+                ),
+                Aggregates.sort(Sorts.descending("totalPoints")),
+                Aggregates.limit(1),
+                includeFields("nom", "prenom", "totalPoints")
+        );
+
+        sepQ5("j");
+        System.out.println("Essais");
+        displayResult(collection, pipelineEssais);
+        System.out.println("Points");
+        displayResult(collection, pipelinePoints);
+        sep();
+    }
+
+//    //TODO show 2 diffrent player, 1 for each criteria
+//    private static void q5j(MongoCollection<Document> collection) {
+//        List<Bson> pipeline = Arrays.asList(
+//                Aggregates.unwind("$joueurs"),
+//                Aggregates.unwind("$matchs"),
+//                Aggregates.unwind("$matchs.performances"),
+//                Aggregates.match(Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))),
+//                Aggregates.group("$joueurs.numeroJoueur",
+//                        Accumulators.first("nom", "$joueurs.nom"),
+//                        Accumulators.first("prenom", "$joueurs.prenom"),
+//                        Accumulators.sum("totalEssais", "$matchs.performances.essaisMarques"),
+//                        Accumulators.sum("totalPoints", "$matchs.performances.pointsMarques")
+//                ),
+//                Aggregates.sort(Sorts.descending("totalEssais", "totalPoints")),
+//                includeFields("nom", "prenom", "totalEssais", "totalPoints")
+//        );
+//
+//        displayQuestionJson("j", collection, pipeline);
+//    }
+
+
+    private static void q5i(MongoCollection<Document> collection, String equipeE) {
         List<Bson> pipeline = Arrays.asList(
-                Aggregates.unwind("$joueurs"),
+                Aggregates.match(Filters.eq("codeEquipe", equipeE)),
                 Aggregates.unwind("$matchs"),
                 Aggregates.unwind("$matchs.performances"),
                 Aggregates.match(Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))),
                 Aggregates.group("$joueurs.numeroJoueur",
                         Accumulators.first("nom", "$joueurs.nom"),
                         Accumulators.first("prenom", "$joueurs.prenom"),
-                        Accumulators.sum("totalEssais", "$matchs.performances.essaisMarques"),
-                        Accumulators.sum("totalPoints", "$matchs.performances.pointsMarques")
-                ),
-                Aggregates.sort(Sorts.descending("totalEssais", "totalPoints")),
-                includeFields("nom", "prenom", "totalEssais", "totalPoints")
-        );
-
-        displayQuestionJson("j", collection, pipeline);
-    }
-
-
-    //TODO error
-    private static void q5i(MongoCollection<Document> collection, String equipeE) {
-        List<Bson> pipeline = Arrays.asList(
-                Aggregates.match(Filters.eq("codeEquipe", equipeE)),
-                Aggregates.unwind("$joueurs"),
-                Aggregates.unwind("$matchs"),
-                Aggregates.group("$joueurs.numeroJoueur",
-                        Accumulators.first("nom", "$joueurs.nom"),
-                        Accumulators.first("prenom", "$joueurs.prenom"),
                         Accumulators.sum("totalMatchs", 1)
                 ),
                 Aggregates.match(Filters.expr(new Document("$eq", Arrays.asList("$totalMatchs", new Document("$size", "$matchs"))))),
-                includeFields("nom", "prenom")
+                includeFields("_id", "nom", "prenom", "totalMatchs")
         );
+
+//        List<Bson> pipeline = Arrays.asList(
+//                Aggregates.match(Filters.eq("codeEquipe", equipeE)),
+//                Aggregates.unwind("$joueurs"),
+//                Aggregates.unwind("$matchs"),
+//                Aggregates.unwind("$matchs.performances"),
+//                Aggregates.match(Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))),
+//                Aggregates.group("$joueurs.numeroJoueur",
+//                        Accumulators.first("nom", "$joueurs.nom"),
+//                        Accumulators.first("prenom", "$joueurs.prenom"),
+//                        Accumulators.sum("totalMatchs", 1)
+//                ),
+//                Aggregates.match(Filters.expr(new Document("$eq", Arrays.asList("$totalMatchs", new Document("$cond", Arrays.asList(new Document("$isArray", "$matchs"), new Document("$size", "$matchs"), 0)) )))),
+//                Aggregates.project(fields(
+//                        include("_id", "nom", "prenom", "totalMatchs")
+//                ))
+//        );
+
+//        List<Bson> pipeline = Arrays.asList(
+//                Aggregates.match(Filters.eq("codeEquipe", equipeE)),
+//                Aggregates.unwind("$joueurs"),
+//                Aggregates.unwind("$matchs"),
+//                Aggregates.unwind("$matchs.performances"),
+//                Aggregates.match(Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))),
+//                Aggregates.group("$joueurs.numeroJoueur",
+//                        Accumulators.first("nom", "$joueurs.nom"),
+//                        Accumulators.first("prenom", "$joueurs.prenom"),
+//                        Accumulators.sum("totalMatchs", 1)
+//                ),
+//                Aggregates.match(Filters.expr(new Document("$eq", Arrays.asList("$totalMatchs", new Document("$size", "$matchs"))))),
+//                Aggregates.project(fields(
+//                        include("_id", "nom", "prenom", "totalMatchs")
+//                ))
+//        );
+
         displayQuestionJson("i", collection, pipeline);
     }
+
 
 
     private static void q5h(MongoCollection<Document> collection, String equipeE) {
