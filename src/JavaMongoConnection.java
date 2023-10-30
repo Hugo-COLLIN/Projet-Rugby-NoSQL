@@ -94,15 +94,36 @@ public class JavaMongoConnection {
     }
 
 
-    //TODO pas toute la collection
     private static void q5h(MongoCollection<Document> collection, String equipeE) {
-        Bson filter = Filters.and(Filters.eq("codeEquipe", equipeE), Filters.exists("joueurs.matchs", false));
+        // Étape 1: Obtenir une liste de tous les numéros de joueurs qui ont joué dans les matchs
+        List<Integer> playerNumbersWhoPlayed = collection.aggregate(Arrays.asList(
+                Aggregates.match(Filters.eq("codeEquipe", equipeE)),
+                Aggregates.unwind("$matchs"),
+                Aggregates.unwind("$matchs.performances"),
+                Aggregates.group("$matchs.performances.numeroJoueur")
+        )).map(document -> document.getInteger("_id")).into(new ArrayList<>());
+
+//        playerNumbersWhoPlayed.remove(0);
+//        System.out.println(playerNumbersWhoPlayed);
+
+        // Étape 2: Obtenir les joueurs qui ne sont pas dans la liste des joueurs qui ont joué
+        Bson filter = Filters.and(
+                Filters.eq("codeEquipe", equipeE),
+                Filters.not(Filters.in("joueurs.numeroJoueur", playerNumbersWhoPlayed))
+        );
         FindIterable<Document> documents = collection.find(filter);
-        MongoCursor<Document> cursor = documents.iterator();
-        while (cursor.hasNext()) {
-            System.out.println(cursor.next());
+
+        sepQ5("h");
+        for (Document document : documents) {
+            List<Document> joueurs = (List<Document>) document.get("joueurs");
+            for (Document joueur : joueurs) {
+                System.out.println("Nom: " + joueur.getString("nom") + ", Prenom: " + joueur.getString("prenom"));
+            }
         }
+        sep();
     }
+
+
 
 
     private static void q5g(MongoCollection<Document> collection, String equipeE1, String equipeE2, String equipeE3) {
@@ -265,7 +286,7 @@ public class JavaMongoConnection {
     }
 
     private static void displayQuestionJson(String q, MongoCollection<Document> collection, List<Bson> pipeline) {
-        q5sep(q);
+        sepQ5(q);
         displayResult(collection, pipeline);
         sep();
     }
@@ -276,7 +297,7 @@ public class JavaMongoConnection {
         }
     }
 
-    static void q5sep(String q) {
+    static void sepQ5(String q) {
         System.out.println("--- Q5." + q + " ---");
     }
 
