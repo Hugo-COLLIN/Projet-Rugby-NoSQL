@@ -5,6 +5,7 @@
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
 import org.bson.*;
 import org.bson.conversions.Bson;
 import com.mongodb.client.*;
@@ -31,10 +32,10 @@ public class JavaMongoConnection {
 //            q5c(collection, "Barnes");
 //            q5d(collection, "2023-09-25", "ENG", "ESP");
 //            q5e(collection, "ENG");
-            q5f(collection, "ENG");
-            q5g(collection, "ENG", "ESP", "FRA");
-//            q5h(collection);
-//            q5i(collection);
+//            q5f(collection, "ENG");
+//            q5g(collection, "ENG", "ESP", "FRA");
+            q5h(collection, "ENG");
+//            q5i(collection, "ENG");
 //            q5j(collection);
 //            q5k(collection);
 
@@ -43,6 +44,66 @@ public class JavaMongoConnection {
             mongoClient.close();
         }
     }
+
+//    private static void q5k(MongoCollection<Document> collection, String matchId, Document referee) {
+//        Document match = collection.find(Filters.eq("_id", new ObjectId(matchId))).first();
+//        if (!match.get("equipe1").equals(referee.get("nationalite")) && !match.get("equipe2").equals(referee.get("nationalite"))) {
+//            collection.updateOne(Filters.eq("_id", new ObjectId(matchId)), Updates.set("**arbitre", referee));
+//        }
+//    }
+
+
+
+
+    //TODO show 2 diffrent player, 1 for each criteria
+    private static void q5j(MongoCollection<Document> collection) {
+        List<Bson> pipeline = Arrays.asList(
+                Aggregates.unwind("$joueurs"),
+                Aggregates.unwind("$matchs"),
+                Aggregates.unwind("$matchs.performances"),
+                Aggregates.match(Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))),
+                Aggregates.group("$joueurs.numeroJoueur",
+                        Accumulators.first("nom", "$joueurs.nom"),
+                        Accumulators.first("prenom", "$joueurs.prenom"),
+                        Accumulators.sum("totalEssais", "$matchs.performances.essaisMarques"),
+                        Accumulators.sum("totalPoints", "$matchs.performances.pointsMarques")
+                ),
+                Aggregates.sort(Sorts.descending("totalEssais", "totalPoints")),
+                includeFields("nom", "prenom", "totalEssais", "totalPoints")
+        );
+
+        displayQuestionJson("j", collection, pipeline);
+    }
+
+
+    //TODO error
+    private static void q5i(MongoCollection<Document> collection, String equipeE) {
+        List<Bson> pipeline = Arrays.asList(
+                Aggregates.match(Filters.eq("codeEquipe", equipeE)),
+                Aggregates.unwind("$joueurs"),
+                Aggregates.unwind("$matchs"),
+                Aggregates.group("$joueurs.numeroJoueur",
+                        Accumulators.first("nom", "$joueurs.nom"),
+                        Accumulators.first("prenom", "$joueurs.prenom"),
+                        Accumulators.sum("totalMatchs", 1)
+                ),
+                Aggregates.match(Filters.expr(new Document("$eq", Arrays.asList("$totalMatchs", new Document("$size", "$matchs"))))),
+                includeFields("nom", "prenom")
+        );
+        displayQuestionJson("i", collection, pipeline);
+    }
+
+
+    //TODO pas toute la collection
+    private static void q5h(MongoCollection<Document> collection, String equipeE) {
+        Bson filter = Filters.and(Filters.eq("codeEquipe", equipeE), Filters.exists("joueurs.matchs", false));
+        FindIterable<Document> documents = collection.find(filter);
+        MongoCursor<Document> cursor = documents.iterator();
+        while (cursor.hasNext()) {
+            System.out.println(cursor.next());
+        }
+    }
+
 
     private static void q5g(MongoCollection<Document> collection, String equipeE1, String equipeE2, String equipeE3) {
         List<Bson> pipeline = Arrays.asList(
@@ -65,7 +126,7 @@ public class JavaMongoConnection {
                         Accumulators.first("nom", "$joueurs.nom"),
                         Accumulators.first("prenom", "$joueurs.prenom")
                 ),
-                aggregatesProjectIncludeFields("nom", "prenom")
+                includeFields("nom", "prenom")
 
         );
 
@@ -89,7 +150,7 @@ public class JavaMongoConnection {
                         Accumulators.sum("totalEssais", "$matchs.performances.essaisMarques"),
                         Accumulators.sum("totalPoints", "$matchs.performances.pointsMarques")
                 ), // Aggréger les valeurs
-                aggregatesProjectIncludeFields("nom", "prenom", "totalMatchs", "totalEssais", "totalPoints") // Inclure uniquement les champs nécessaires
+                includeFields("nom", "prenom", "totalMatchs", "totalEssais", "totalPoints") // Inclure uniquement les champs nécessaires
 
         );
 
@@ -109,7 +170,7 @@ public class JavaMongoConnection {
                                 Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))
                         )
                 ), // Filtrer par début du match et numéro de joueur
-                aggregatesProjectIncludeFields("joueurs.nom", "joueurs.prenom") // Inclure uniquement le nom et le prénom du joueur
+                includeFields("joueurs.nom", "joueurs.prenom") // Inclure uniquement le nom et le prénom du joueur
         );
 
         displayQuestionJson("e", collection, pipeline);
@@ -132,7 +193,7 @@ public class JavaMongoConnection {
                             Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))
                     )
             ), // Filtrer par date, équipe E2, début du match et numéro de joueur
-            aggregatesProjectIncludeFields("joueurs.nom", "joueurs.prenom") // Inclure uniquement le nom et le prénom du joueur
+            includeFields("joueurs.nom", "joueurs.prenom") // Inclure uniquement le nom et le prénom du joueur
         );
 
         displayQuestionJson("d", collection, pipeline);
@@ -148,7 +209,7 @@ public class JavaMongoConnection {
                         )
                 ), // Filtrer par équipe recevant et nom de l'arbitre
                 // Inclure uniquement l'objet arbitre
-                aggregatesProjectIncludeFields("matchs.arbitre.nom", "matchs.arbitre.prenom", "matchs.arbitre.nationalite")
+                includeFields("matchs.arbitre.nom", "matchs.arbitre.prenom", "matchs.arbitre.nationalite")
         );
 
         displayQuestionJson("c", collection, pipeline);
@@ -164,7 +225,7 @@ public class JavaMongoConnection {
                         )
                 ), // Filtrer par date et nombre de points
                 // Inclure uniquement les champs de l'objet match
-                aggregatesProjectIncludeFields("matchs.numeroMatch", "matchs.date", "matchs.evenement",
+                includeFields("matchs.numeroMatch", "matchs.date", "matchs.evenement",
                                         "matchs.stade", "matchs.equipeRecevant", "matchs.equipeReçue",
                                         "matchs.nombrePoints", "matchs.nombreEssais", "matchs.arbitre",
                                         "matchs.nombreSpectateurs", "matchs.performances")
@@ -194,7 +255,7 @@ public class JavaMongoConnection {
         displayQuestionJson("a", collection, pipeline);
     }
 
-    private static Bson aggregatesProjectIncludeFields(String ...fieldsNames) {
+    private static Bson includeFields(String ...fieldsNames) {
         return Aggregates.project(
                 fields(
                         excludeId(),
