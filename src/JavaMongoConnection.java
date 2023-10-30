@@ -23,21 +23,65 @@ public class JavaMongoConnection {
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase sampleTrainingDB = mongoClient.getDatabase("ProjetRugby");
             MongoCollection<Document> collection = sampleTrainingDB.getCollection("equipes");
+            Scanner scanner = new Scanner(System.in);
+            String question;
+            boolean quit = false;
 
+            while (!quit) {
+                System.out.print("Choisissez une question (a, b, c, d, e, f, g, h, i, j, k) ou écrivez quit pour quitter: ");
+                question = scanner.nextLine();
 
-//            q5a(collection, "ENG");
-//            q5b(collection, "2023-09-22", 10);
-//            q5c(collection, "Barnes");
-//            q5d(collection, "2023-09-25", "ENG", "ESP");
-//            q5e(collection, "ENG");
-//            q5f(collection, "ENG");
-//            q5g(collection, "ENG", "ESP", "FRA");
-//            q5h(collection, "ENG");
-//            q5i(collection, "ENG");
-//            q5j(collection);
-            q5k(collection, 1, new Document("nom", "Clat").append("prenom", "Cecilia").append("nationalite", "AFR"));
-
-
+                switch (question) {
+                    case "a":
+//                        System.out.print("Entrez le code de l'équipe (ENG): ");
+//                        String codeEquipe = scanner.nextLine();
+//                        if (codeEquipe.isEmpty())
+//                            codeEquipe = "ENG";
+//                        if (codeEquipe.length() != 3) {
+//                            System.out.println("Le code de l'équipe doit être composé de 3 lettres.");
+//                            break;
+//                        }
+//                        q5a(collection, codeEquipe);
+                        q5a(collection, "ENG");
+                        break;
+                    case "b":
+                        q5b(collection, "2023-09-22", 10);
+                        break;
+                    case "c":
+                        q5c(collection, "Barnes");
+                        break;
+                    case "d":
+                        q5d(collection, "2023-09-25", "ENG", "ESP");
+                        break;
+                    case "e":
+                        q5e(collection, "ENG");
+                        break;
+                    case "f":
+                        q5f(collection, "ENG");
+                        break;
+                    case "g":
+                        q5g(collection, "ENG", "ESP", "FRA");
+                        break;
+                    case "h":
+                        q5h(collection, "ENG");
+                        break;
+                    case "i":
+                        q5i(collection, "ENG");
+                        break;
+                    case "j":
+                        q5j(collection);
+                        break;
+                    case "k":
+                        q5k(collection, 1, new Document("nom", "Clat").append("prenom", "Cecilia").append("nationalite", "AFR"));
+                        break;
+                    case "quit":
+                        quit = true;
+                        break;
+                    default:
+                        System.out.println("Question inconnue.");
+                        break;
+                }
+            }
 
             mongoClient.close();
         }
