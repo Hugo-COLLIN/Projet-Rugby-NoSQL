@@ -7,12 +7,10 @@ import org.bson.*;
 import org.bson.conversions.Bson;
 import com.mongodb.client.*;
 import org.bson.json.JsonWriterSettings;
-import org.bson.types.ObjectId;
 
 import java.util.*;
 
 import static com.mongodb.client.model.Accumulators.sum;
-import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Sorts.descending;
 
@@ -33,15 +31,6 @@ public class JavaMongoConnection {
 
                 switch (question) {
                     case "a":
-//                        System.out.print("Entrez le code de l'équipe (ENG): ");
-//                        String codeEquipe = scanner.nextLine();
-//                        if (codeEquipe.isEmpty())
-//                            codeEquipe = "ENG";
-//                        if (codeEquipe.length() != 3) {
-//                            System.out.println("Le code de l'équipe doit être composé de 3 lettres.");
-//                            break;
-//                        }
-//                        q5a(collection, codeEquipe);
                         q5a(collection, "ENG");
                         break;
                     case "b":
@@ -108,44 +97,6 @@ public class JavaMongoConnection {
 
     }
 
-
-
-//    private static void q5k(MongoCollection<Document> collection, int matchId, Document referee) {
-//        Document team = collection.find(Filters.elemMatch("matchs", Filters.eq("numeroMatch", matchId))).first();
-//        assert team != null;
-//        List<Document> matchs = (List<Document>) team.get("matchs");
-//        Document match = matchs.stream().filter(m -> m.getInteger("numeroMatch") == matchId).findFirst().orElse(null);
-//        assert match != null;
-//        String equipeRecevant = match.getString("equipeRecevant");
-//        String equipeRecue = match.getString("equipeReçue");
-//        String nationaliteArbitre = referee.getString("nationalite");
-//
-//        if (!equipeRecevant.equals(nationaliteArbitre) && !equipeRecue.equals(nationaliteArbitre)) {
-//            Bson filter = Filters.and(Filters.eq("matchs.numeroMatch", matchId), Filters.or(Filters.ne("equipeRecevant", nationaliteArbitre), Filters.ne("equipeReçue", nationaliteArbitre)));
-//            Bson update = Updates.set("matchs.$.arbitre", referee);
-//            collection.updateOne(filter, update);
-//        }
-//    }
-
-
-
-//    private static void q5k(MongoCollection<Document> collection, int matchId, Document referee) {
-//        Bson filter = Filters.eq("matchs.numeroMatch", matchId);
-//        Bson update = Updates.set("matchs.$.arbitre", referee);
-//        collection.updateOne(filter, update);
-//    }
-
-
-//    private static void q5k(MongoCollection<Document> collection, String matchId, Document referee) {
-//        Document match = collection.find(Filters.eq("_id", new ObjectId(matchId))).first();
-//        assert match != null;
-//        if (!match.get("equipe1").equals(referee.get("nationalite")) && !match.get("equipe2").equals(referee.get("nationalite"))) {
-//            collection.updateOne(Filters.eq("_id", new ObjectId(matchId)), Updates.set("**arbitre", referee));
-//        }
-//    }
-
-
-
     public static void q5j(MongoCollection<Document> collection) {
         List<Bson> pipelineEssais = Arrays.asList(
                 Aggregates.unwind("$matchs"),
@@ -181,27 +132,6 @@ public class JavaMongoConnection {
         sep();
     }
 
-//    //TODO show 2 diffrent player, 1 for each criteria
-//    private static void q5j(MongoCollection<Document> collection) {
-//        List<Bson> pipeline = Arrays.asList(
-//                Aggregates.unwind("$joueurs"),
-//                Aggregates.unwind("$matchs"),
-//                Aggregates.unwind("$matchs.performances"),
-//                Aggregates.match(Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))),
-//                Aggregates.group("$joueurs.numeroJoueur",
-//                        Accumulators.first("nom", "$joueurs.nom"),
-//                        Accumulators.first("prenom", "$joueurs.prenom"),
-//                        Accumulators.sum("totalEssais", "$matchs.performances.essaisMarques"),
-//                        Accumulators.sum("totalPoints", "$matchs.performances.pointsMarques")
-//                ),
-//                Aggregates.sort(Sorts.descending("totalEssais", "totalPoints")),
-//                includeFields("nom", "prenom", "totalEssais", "totalPoints")
-//        );
-//
-//        displayQuestionJson("j", collection, pipeline);
-//    }
-
-
     private static void q5i(MongoCollection<Document> collection, String equipeE) {
         List<Bson> pipeline = Arrays.asList(
                 Aggregates.match(Filters.eq("codeEquipe", equipeE)),
@@ -216,40 +146,6 @@ public class JavaMongoConnection {
                 Aggregates.match(Filters.expr(new Document("$eq", Arrays.asList("$totalMatchs", new Document("$size", "$matchs"))))),
                 includeFields("_id", "nom", "prenom", "totalMatchs")
         );
-
-//        List<Bson> pipeline = Arrays.asList(
-//                Aggregates.match(Filters.eq("codeEquipe", equipeE)),
-//                Aggregates.unwind("$joueurs"),
-//                Aggregates.unwind("$matchs"),
-//                Aggregates.unwind("$matchs.performances"),
-//                Aggregates.match(Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))),
-//                Aggregates.group("$joueurs.numeroJoueur",
-//                        Accumulators.first("nom", "$joueurs.nom"),
-//                        Accumulators.first("prenom", "$joueurs.prenom"),
-//                        Accumulators.sum("totalMatchs", 1)
-//                ),
-//                Aggregates.match(Filters.expr(new Document("$eq", Arrays.asList("$totalMatchs", new Document("$cond", Arrays.asList(new Document("$isArray", "$matchs"), new Document("$size", "$matchs"), 0)) )))),
-//                Aggregates.project(fields(
-//                        include("_id", "nom", "prenom", "totalMatchs")
-//                ))
-//        );
-
-//        List<Bson> pipeline = Arrays.asList(
-//                Aggregates.match(Filters.eq("codeEquipe", equipeE)),
-//                Aggregates.unwind("$joueurs"),
-//                Aggregates.unwind("$matchs"),
-//                Aggregates.unwind("$matchs.performances"),
-//                Aggregates.match(Filters.expr(new Document("$eq", Arrays.asList("$matchs.performances.numeroJoueur", "$joueurs.numeroJoueur")))),
-//                Aggregates.group("$joueurs.numeroJoueur",
-//                        Accumulators.first("nom", "$joueurs.nom"),
-//                        Accumulators.first("prenom", "$joueurs.prenom"),
-//                        Accumulators.sum("totalMatchs", 1)
-//                ),
-//                Aggregates.match(Filters.expr(new Document("$eq", Arrays.asList("$totalMatchs", new Document("$size", "$matchs"))))),
-//                Aggregates.project(fields(
-//                        include("_id", "nom", "prenom", "totalMatchs")
-//                ))
-//        );
 
         displayQuestionJson("i", collection, pipeline);
     }
