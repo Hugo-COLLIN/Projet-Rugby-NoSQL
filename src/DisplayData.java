@@ -9,6 +9,9 @@ import org.bson.json.JsonWriterSettings;
 
 import java.util.List;
 
+/**
+ * Classe utilitaire pour l'affichage des données.
+ */
 public class DisplayData {
     /**
      * Affiche le résultat de la requête.
