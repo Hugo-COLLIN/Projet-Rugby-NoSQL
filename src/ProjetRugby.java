@@ -14,18 +14,24 @@ import static com.mongodb.client.model.Accumulators.sum;
 import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Sorts.descending;
 
-public class JavaMongoConnection {
+/**
+ * Classe du Projet Rugby.
+ */
+public class ProjetRugby {
 
     /**
      * Exécute les requêtes de la question 5.
-     * @param args Non utilisé
+     * @param args Arguments:
+     *             - args[0]: URI de la base de données
+     *             - args[1]: Nom de la base de données
+     *             - args[2]: Nom de la collection
      */
     public static void main(String[] args) {
-        String uri = "mongodb://localhost:27017";
+        String uri = args.length > 0 ? args[0] : "mongodb://localhost:27017";
 
         try (MongoClient mongoClient = MongoClients.create(uri)) {
-            MongoDatabase sampleTrainingDB = mongoClient.getDatabase("ProjetRugby");
-            MongoCollection<Document> collection = sampleTrainingDB.getCollection("equipes");
+            MongoDatabase sampleTrainingDB = mongoClient.getDatabase(args.length > 1 ? args[1] : "ProjetRugby");
+            MongoCollection<Document> collection = sampleTrainingDB.getCollection(args.length > 2 ? args[2] : "equipes");
             Scanner scanner = new Scanner(System.in);
             String question;
             boolean quit = false;
@@ -66,7 +72,7 @@ public class JavaMongoConnection {
                         q5j(collection);
                         break;
                     case "k":
-                        q5k(collection, 1, new Document("nom", "Clat").append("prenom", "Cecilia").append("nationalite", "AFR"));
+                        q5k(collection, 1, new Document("nom", "Bako").append("prenom", "Dalia").append("nationalite", "DNK"));
                         break;
                     case "quit":
                         quit = true;
