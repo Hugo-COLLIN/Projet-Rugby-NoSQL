@@ -9,6 +9,7 @@ import com.mongodb.client.*;
 import org.bson.json.JsonWriterSettings;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.mongodb.client.model.Accumulators.sum;
@@ -78,11 +79,11 @@ public class ProjetRugby {
                         q5j(collection);
                         break;
                     case "k":
-                        int matchId = Integer.parseInt(questionString(scanner, "Numéro du match: "));
+                        int matchId = questionInt(scanner, "Numéro du match: ", i -> i > 0, "Veuillez entrer un nombre positif.");
                         String nom = questionString(scanner, "Nom de l'arbitre: ", s -> s.length() <= 20);
                         String prenom = questionString(scanner, "Prénom de l'arbitre: ", s -> s.length() <= 20);
                         String nationalite = questionString(scanner, "Nationalité de l'arbitre: ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
-                        q5k(collection, matchId, new Document("nom", nom).append("prenom", prenom).append("nationalite", nationalite));
+                        q5k(collection, matchId, new Document("nom", nom).append("prenom", prenom).append("nationalite", nationalite.toUpperCase()));
                         break;
                     case "quit":
                         quit = true;
@@ -421,7 +422,6 @@ public class ProjetRugby {
         );
     }
 
-
     /**
      * Demande à l'utilisateur d'entrer une valeur.
      * @param scanner Scanner
@@ -430,6 +430,19 @@ public class ProjetRugby {
      */
     private static String questionString(Scanner scanner, String question) {
         return questionString(scanner, question, s -> true);
+    }
+
+    private static int questionInt(Scanner scanner, String question) {
+        return questionInt(scanner, question, s -> true);
+    }
+
+
+    private static String questionString(Scanner scanner, String question, Predicate<String> conditions, String conditionErrorMessage) {
+        return question(scanner, question, Function.identity(), conditions, conditionErrorMessage);
+    }
+
+    private static int questionInt(Scanner scanner, String question, Predicate<Integer> conditions, String conditionErrorMessage) {
+        return question(scanner, question, Integer::parseInt, conditions, conditionErrorMessage);
     }
 
     /**
@@ -445,56 +458,38 @@ public class ProjetRugby {
         return questionString(scanner, question, conditions, "Veuillez entrer une valeur valide.");
     }
 
+    private static int questionInt(Scanner scanner, String question, Predicate<Integer> conditions) {
+        return questionInt(scanner, question, conditions, "Veuillez entrer une valeur valide.");
+    }
+
     /**
      * Demande à l'utilisateur d'entrer une valeur.
      * La valeur doit respecter les conditions.
      * Un message d'erreur spécifique est affiché si la valeur ne respecte pas les conditions.
      * @param scanner Scanner
      * @param question Question
+     * @param converter Convertisseur de la valeur
      * @param conditions Conditions de la valeur
      * @param conditionErrorMessage Message d'erreur si la valeur ne respecte pas les conditions
      * @return Valeur entrée par l'utilisateur
      */
-    private static String questionString(Scanner scanner, String question, Predicate<String> conditions, String conditionErrorMessage) {
+    private static <T> T question(Scanner scanner, String question, Function<String, T> converter, Predicate<T> conditions, String conditionErrorMessage) {
         System.out.print(question);
         String input = scanner.nextLine();
         if (input.isEmpty()) {
             System.out.println("Veuillez entrer une valeur.");
-            return questionString(scanner, question, conditions, conditionErrorMessage);
+            return question(scanner, question, converter, conditions, conditionErrorMessage);
         }
-        if (!conditions.test(input)) {
-            System.out.println(conditionErrorMessage);
-            return questionString(scanner, question, conditions, conditionErrorMessage);
-        }
-
-        return input;
-    }
-
-    private static int questionInt(Scanner scanner, String question) {
-        return questionInt(scanner, question, s -> true);
-    }
-
-    private static int questionInt(Scanner scanner, String question, Predicate<Integer> conditions) {
-        return questionInt(scanner, question, conditions, "Veuillez entrer une valeur valide.");
-    }
-
-    private static int questionInt(Scanner scanner, String question, Predicate<Integer> conditions, String conditionErrorMessage) {
-        System.out.print(question);
-        String input = scanner.nextLine();
-        if (input.isEmpty()) {
-            System.out.println("Veuillez entrer une valeur.");
-            return questionInt(scanner, question, conditions, conditionErrorMessage);
-        }
-        int value;
+        T value;
         try {
-            value = Integer.parseInt(input);
-        } catch (NumberFormatException e) {
+            value = converter.apply(input);
+        } catch (Exception e) {
             System.out.println(conditionErrorMessage);
-            return questionInt(scanner, question, conditions, conditionErrorMessage);
+            return question(scanner, question, converter, conditions, conditionErrorMessage);
         }
         if (!conditions.test(value)) {
             System.out.println(conditionErrorMessage);
-            return questionInt(scanner, question, conditions, conditionErrorMessage);
+            return question(scanner, question, converter, conditions, conditionErrorMessage);
         }
 
         return value;
