@@ -9,6 +9,7 @@ import com.mongodb.client.*;
 import org.bson.json.JsonWriterSettings;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 import static com.mongodb.client.model.Accumulators.sum;
 import static com.mongodb.client.model.Projections.*;
@@ -18,6 +19,9 @@ import static com.mongodb.client.model.Sorts.descending;
  * Classe du Projet Rugby.
  */
 public class ProjetRugby {
+
+    public static final Predicate<String> CODE_EQUIPE_PREDICATE = s -> s.length() == 3;
+    public static final String CODE_EQUIPE_ERR_MSG = "Veuillez entrer un code de 3 lettres.";
 
     /**
      * Exécute les requêtes de la question 5.
@@ -33,7 +37,7 @@ public class ProjetRugby {
             MongoDatabase sampleTrainingDB = mongoClient.getDatabase(args.length > 1 ? args[1] : "ProjetRugby");
             MongoCollection<Document> collection = sampleTrainingDB.getCollection(args.length > 2 ? args[2] : "equipes");
             Scanner scanner = new Scanner(System.in);
-            String question;
+            String question, equipeE;
             boolean quit = false;
 
             while (!quit) {
@@ -63,16 +67,22 @@ public class ProjetRugby {
                         q5g(collection, "ENG", "ESP", "FRA");
                         break;
                     case "h":
-                        q5h(collection, "ENG");
+                        equipeE = questionString(scanner, "Code de l'équipe (testé avec \"ENG\"): ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
+                        q5h(collection, equipeE);
                         break;
                     case "i":
-                        q5i(collection, "ENG");
+                        equipeE = questionString(scanner, "Code de l'équipe (testé avec \"ENG\"): ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
+                        q5i(collection, equipeE);
                         break;
                     case "j":
                         q5j(collection);
                         break;
                     case "k":
-                        q5k(collection, 1, new Document("nom", "Bako").append("prenom", "Dalia").append("nationalite", "DNK"));
+                        int matchId = Integer.parseInt(questionString(scanner, "Numéro du match: "));
+                        String nom = questionString(scanner, "Nom de l'arbitre: ", s -> s.length() <= 20);
+                        String prenom = questionString(scanner, "Prénom de l'arbitre: ", s -> s.length() <= 20);
+                        String nationalite = questionString(scanner, "Nationalité de l'arbitre: ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
+                        q5k(collection, matchId, new Document("nom", nom).append("prenom", prenom).append("nationalite", nationalite));
                         break;
                     case "quit":
                         quit = true;
@@ -409,6 +419,85 @@ public class ProjetRugby {
                         include(fieldsNames)
                 )
         );
+    }
+
+
+    /**
+     * Demande à l'utilisateur d'entrer une valeur.
+     * @param scanner Scanner
+     * @param question Question
+     * @return Valeur entrée par l'utilisateur
+     */
+    private static String questionString(Scanner scanner, String question) {
+        return questionString(scanner, question, s -> true);
+    }
+
+    /**
+     * Demande à l'utilisateur d'entrer une valeur.
+     * La valeur doit respecter les conditions.
+     * Un message d'erreur est affiché si la valeur ne respecte pas les conditions.
+     * @param scanner Scanner
+     * @param question Question
+     * @param conditions Conditions de la valeur
+     * @return Valeur entrée par l'utilisateur
+     */
+    private static String questionString(Scanner scanner, String question, Predicate<String> conditions) {
+        return questionString(scanner, question, conditions, "Veuillez entrer une valeur valide.");
+    }
+
+    /**
+     * Demande à l'utilisateur d'entrer une valeur.
+     * La valeur doit respecter les conditions.
+     * Un message d'erreur spécifique est affiché si la valeur ne respecte pas les conditions.
+     * @param scanner Scanner
+     * @param question Question
+     * @param conditions Conditions de la valeur
+     * @param conditionErrorMessage Message d'erreur si la valeur ne respecte pas les conditions
+     * @return Valeur entrée par l'utilisateur
+     */
+    private static String questionString(Scanner scanner, String question, Predicate<String> conditions, String conditionErrorMessage) {
+        System.out.print(question);
+        String input = scanner.nextLine();
+        if (input.isEmpty()) {
+            System.out.println("Veuillez entrer une valeur.");
+            return questionString(scanner, question, conditions, conditionErrorMessage);
+        }
+        if (!conditions.test(input)) {
+            System.out.println(conditionErrorMessage);
+            return questionString(scanner, question, conditions, conditionErrorMessage);
+        }
+
+        return input;
+    }
+
+    private static int questionInt(Scanner scanner, String question) {
+        return questionInt(scanner, question, s -> true);
+    }
+
+    private static int questionInt(Scanner scanner, String question, Predicate<Integer> conditions) {
+        return questionInt(scanner, question, conditions, "Veuillez entrer une valeur valide.");
+    }
+
+    private static int questionInt(Scanner scanner, String question, Predicate<Integer> conditions, String conditionErrorMessage) {
+        System.out.print(question);
+        String input = scanner.nextLine();
+        if (input.isEmpty()) {
+            System.out.println("Veuillez entrer une valeur.");
+            return questionInt(scanner, question, conditions, conditionErrorMessage);
+        }
+        int value;
+        try {
+            value = Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println(conditionErrorMessage);
+            return questionInt(scanner, question, conditions, conditionErrorMessage);
+        }
+        if (!conditions.test(value)) {
+            System.out.println(conditionErrorMessage);
+            return questionInt(scanner, question, conditions, conditionErrorMessage);
+        }
+
+        return value;
     }
 
     /**
