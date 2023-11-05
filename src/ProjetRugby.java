@@ -6,10 +6,8 @@ import com.mongodb.client.model.*;
 import org.bson.*;
 import org.bson.conversions.Bson;
 import com.mongodb.client.*;
-import org.bson.json.JsonWriterSettings;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.mongodb.client.model.Accumulators.sum;
@@ -21,8 +19,20 @@ import static com.mongodb.client.model.Sorts.descending;
  */
 public class ProjetRugby {
 
+    /**
+     * Prédicat pour vérifier que le code de l'équipe est de 3 lettres.
+     */
     public static final Predicate<String> CODE_EQUIPE_PREDICATE = s -> s.length() == 3;
+
+    /**
+     * Message d'erreur pour le code de l'équipe.
+     */
     public static final String CODE_EQUIPE_ERR_MSG = "Veuillez entrer un code de 3 lettres.";
+
+    /**
+     * Prédicat pour vérifier que la longueur de la chaîne est inférieure ou égale à 20.
+     */
+    public static final Predicate<String> STRING_LENGTH_PREDICATE = s -> s.length() <= 20;
 
     /**
      * Exécute les requêtes de la question 5.
@@ -38,7 +48,9 @@ public class ProjetRugby {
             MongoDatabase sampleTrainingDB = mongoClient.getDatabase(args.length > 1 ? args[1] : "ProjetRugby");
             MongoCollection<Document> collection = sampleTrainingDB.getCollection(args.length > 2 ? args[2] : "equipes");
             Scanner scanner = new Scanner(System.in);
-            String question, equipeE;
+            String question;
+            String equipeE1, equipeE2, equipeE3, dateD, arbitreANom, arbitreAPrenom, arbitreANationalite;
+            int pointsP, matchId;
             boolean quit = false;
 
             while (!quit) {
@@ -47,43 +59,55 @@ public class ProjetRugby {
 
                 switch (question) {
                     case "a":
-                        q5a(collection, "ENG");
+                        equipeE1 = UserInput.questionString(scanner, "Code de l'équipe (testé avec \"ENG\"): ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
+                        q5a(collection, equipeE1);
                         break;
                     case "b":
-                        q5b(collection, "2023-09-22", 10);
+                        dateD = UserInput.questionString(scanner, "Date du match (testé avec \"2023-09-22\"): ");
+                        pointsP = UserInput.questionInt(scanner, "Nombre de points (testé avec 10): ", i -> i > 0, "Veuillez entrer un nombre positif.");
+                        q5b(collection, dateD, pointsP);
                         break;
                     case "c":
-                        q5c(collection, "Barnes");
+                        arbitreANom = UserInput.questionString(scanner, "Nom de l'arbitre (testé avec \"Barnes\"): ", STRING_LENGTH_PREDICATE);
+                        q5c(collection, arbitreANom);
                         break;
                     case "d":
-                        q5d(collection, "2023-09-25", "ENG", "ESP");
+                        dateD = UserInput.questionString(scanner, "Date du match (testé avec \"2023-09-25\"): ");
+                        equipeE1 = UserInput.questionString(scanner, "Code de l'équipe (testé avec \"ENG\"): ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
+                        equipeE2 = UserInput.questionString(scanner, "Code de l'équipe (testé avec \"ESP\"): ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
+                        q5d(collection, dateD, equipeE1, equipeE2);
                         break;
                     case "e":
-                        q5e(collection, "ENG");
+                        equipeE1 = UserInput.questionString(scanner, "Code de l'équipe (testé avec \"ENG\"): ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
+                        q5e(collection, equipeE1);
                         break;
                     case "f":
-                        q5f(collection, "ENG");
+                        equipeE1 = UserInput.questionString(scanner, "Code de l'équipe (testé avec \"ENG\"): ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
+                        q5f(collection, equipeE1);
                         break;
                     case "g":
-                        q5g(collection, "ENG", "ESP", "FRA");
+                        equipeE1 = UserInput.questionString(scanner, "Code de l'équipe 1 (testé avec \"ENG\"): ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
+                        equipeE2 = UserInput.questionString(scanner, "Code de l'équipe 2 (testé avec \"ESP\"): ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
+                        equipeE3 = UserInput.questionString(scanner, "Code de l'équipe 3 (testé avec \"FRA\"): ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
+                        q5g(collection, equipeE1, equipeE2, equipeE3);
                         break;
                     case "h":
-                        equipeE = questionString(scanner, "Code de l'équipe (testé avec \"ENG\"): ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
-                        q5h(collection, equipeE);
+                        equipeE1 = UserInput.questionString(scanner, "Code de l'équipe (testé avec \"ENG\"): ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
+                        q5h(collection, equipeE1);
                         break;
                     case "i":
-                        equipeE = questionString(scanner, "Code de l'équipe (testé avec \"ENG\"): ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
-                        q5i(collection, equipeE);
+                        equipeE1 = UserInput.questionString(scanner, "Code de l'équipe (testé avec \"ENG\"): ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
+                        q5i(collection, equipeE1);
                         break;
                     case "j":
                         q5j(collection);
                         break;
                     case "k":
-                        int matchId = questionInt(scanner, "Numéro du match: ", i -> i > 0, "Veuillez entrer un nombre positif.");
-                        String nom = questionString(scanner, "Nom de l'arbitre: ", s -> s.length() <= 20);
-                        String prenom = questionString(scanner, "Prénom de l'arbitre: ", s -> s.length() <= 20);
-                        String nationalite = questionString(scanner, "Nationalité de l'arbitre: ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
-                        q5k(collection, matchId, new Document("nom", nom).append("prenom", prenom).append("nationalite", nationalite.toUpperCase()));
+                        matchId = UserInput.questionInt(scanner, "Numéro du match: ", i -> i > 0, "Veuillez entrer un nombre positif.");
+                        arbitreANom = UserInput.questionString(scanner, "Nom de l'arbitre: ", STRING_LENGTH_PREDICATE);
+                        arbitreAPrenom = UserInput.questionString(scanner, "Prénom de l'arbitre: ", STRING_LENGTH_PREDICATE);
+                        arbitreANationalite = UserInput.questionString(scanner, "Nationalité de l'arbitre: ", CODE_EQUIPE_PREDICATE, CODE_EQUIPE_ERR_MSG);
+                        q5k(collection, matchId, new Document("nom", arbitreANom).append("prenom", arbitreAPrenom).append("nationalite", arbitreANationalite.toUpperCase()));
                         break;
                     case "quit":
                         quit = true;
@@ -123,7 +147,7 @@ public class ProjetRugby {
         );
 
 
-        displayQuestionJson("a", collection, pipeline);
+        DisplayData.displayQuestionJson("a", collection, pipeline);
     }
 
     /**
@@ -148,7 +172,7 @@ public class ProjetRugby {
                         "matchs.nombreSpectateurs", "matchs.performances")
         );
 
-        displayQuestionJson("b", collection, pipeline);
+        DisplayData.displayQuestionJson("b", collection, pipeline);
     }
 
     /**
@@ -169,7 +193,7 @@ public class ProjetRugby {
                 includeFields("matchs.arbitre.nom", "matchs.arbitre.prenom", "matchs.arbitre.nationalite")
         );
 
-        displayQuestionJson("c", collection, pipeline);
+        DisplayData.displayQuestionJson("c", collection, pipeline);
     }
 
     /**
@@ -199,7 +223,7 @@ public class ProjetRugby {
                 includeFields("joueurs.nom", "joueurs.prenom") // Inclure uniquement le nom et le prénom du joueur
         );
 
-        displayQuestionJson("d", collection, pipeline);
+        DisplayData.displayQuestionJson("d", collection, pipeline);
     }
 
     /**
@@ -222,7 +246,7 @@ public class ProjetRugby {
                 includeFields("joueurs.nom", "joueurs.prenom") // Inclure uniquement le nom et le prénom du joueur
         );
 
-        displayQuestionJson("e", collection, pipeline);
+        DisplayData.displayQuestionJson("e", collection, pipeline);
     }
 
     /**
@@ -250,7 +274,7 @@ public class ProjetRugby {
 
         );
 
-        displayQuestionJson("f", collection, pipeline);
+        DisplayData.displayQuestionJson("f", collection, pipeline);
     }
 
     /**
@@ -285,13 +309,13 @@ public class ProjetRugby {
 
         );
 
-        displayQuestionJson("g", collection, pipeline);
+        DisplayData.displayQuestionJson("g", collection, pipeline);
     }
 
     /**
      * Affiche les joueurs qui n'ont joué aucun match de leur équipe.
-     * @param collection
-     * @param equipeE
+     * @param collection Collection des équipes
+     * @param equipeE Équipe
      */
     private static void q5h(MongoCollection<Document> collection, String equipeE) {
         // Étape 1: Obtenir une liste de tous les numéros de joueurs qui ont joué dans les matchs
@@ -309,14 +333,14 @@ public class ProjetRugby {
         );
         FindIterable<Document> documents = collection.find(filter);
 
-        sepQ5("h");
+        DisplayData.sepQ5("h");
         for (Document document : documents) {
             List<Document> joueurs = (List<Document>) document.get("joueurs");
             for (Document joueur : joueurs) {
                 System.out.println("Nom: " + joueur.getString("nom") + ", Prenom: " + joueur.getString("prenom"));
             }
         }
-        sep();
+        DisplayData.sep();
     }
 
     /**
@@ -339,7 +363,7 @@ public class ProjetRugby {
                 includeFields("_id", "nom", "prenom", "totalMatchs")
         );
 
-        displayQuestionJson("i", collection, pipeline);
+        DisplayData.displayQuestionJson("i", collection, pipeline);
     }
 
     /**
@@ -373,12 +397,12 @@ public class ProjetRugby {
                 includeFields("nom", "prenom", "totalPoints")
         );
 
-        sepQ5("j");
+        DisplayData.sepQ5("j");
         System.out.println("Essais:");
-        displayResult(collection, pipelineEssais);
+        DisplayData.displayResult(collection, pipelineEssais);
         System.out.println("Points:");
-        displayResult(collection, pipelinePoints);
-        sep();
+        DisplayData.displayResult(collection, pipelinePoints);
+        DisplayData.sep();
     }
 
     /**
@@ -420,116 +444,5 @@ public class ProjetRugby {
                         include(fieldsNames)
                 )
         );
-    }
-
-    /**
-     * Demande à l'utilisateur d'entrer une valeur.
-     * @param scanner Scanner
-     * @param question Question
-     * @return Valeur entrée par l'utilisateur
-     */
-    private static String questionString(Scanner scanner, String question) {
-        return questionString(scanner, question, s -> true);
-    }
-
-    private static int questionInt(Scanner scanner, String question) {
-        return questionInt(scanner, question, s -> true);
-    }
-
-
-    private static String questionString(Scanner scanner, String question, Predicate<String> conditions, String conditionErrorMessage) {
-        return question(scanner, question, Function.identity(), conditions, conditionErrorMessage);
-    }
-
-    private static int questionInt(Scanner scanner, String question, Predicate<Integer> conditions, String conditionErrorMessage) {
-        return question(scanner, question, Integer::parseInt, conditions, conditionErrorMessage);
-    }
-
-    /**
-     * Demande à l'utilisateur d'entrer une valeur.
-     * La valeur doit respecter les conditions.
-     * Un message d'erreur est affiché si la valeur ne respecte pas les conditions.
-     * @param scanner Scanner
-     * @param question Question
-     * @param conditions Conditions de la valeur
-     * @return Valeur entrée par l'utilisateur
-     */
-    private static String questionString(Scanner scanner, String question, Predicate<String> conditions) {
-        return questionString(scanner, question, conditions, "Veuillez entrer une valeur valide.");
-    }
-
-    private static int questionInt(Scanner scanner, String question, Predicate<Integer> conditions) {
-        return questionInt(scanner, question, conditions, "Veuillez entrer une valeur valide.");
-    }
-
-    /**
-     * Demande à l'utilisateur d'entrer une valeur.
-     * La valeur doit respecter les conditions.
-     * Un message d'erreur spécifique est affiché si la valeur ne respecte pas les conditions.
-     * @param scanner Scanner
-     * @param question Question
-     * @param converter Convertisseur de la valeur
-     * @param conditions Conditions de la valeur
-     * @param conditionErrorMessage Message d'erreur si la valeur ne respecte pas les conditions
-     * @return Valeur entrée par l'utilisateur
-     */
-    private static <T> T question(Scanner scanner, String question, Function<String, T> converter, Predicate<T> conditions, String conditionErrorMessage) {
-        System.out.print(question);
-        String input = scanner.nextLine();
-        if (input.isEmpty()) {
-            System.out.println("Veuillez entrer une valeur.");
-            return question(scanner, question, converter, conditions, conditionErrorMessage);
-        }
-        T value;
-        try {
-            value = converter.apply(input);
-        } catch (Exception e) {
-            System.out.println(conditionErrorMessage);
-            return question(scanner, question, converter, conditions, conditionErrorMessage);
-        }
-        if (!conditions.test(value)) {
-            System.out.println(conditionErrorMessage);
-            return question(scanner, question, converter, conditions, conditionErrorMessage);
-        }
-
-        return value;
-    }
-
-    /**
-     * Affiche le résultat de la requête.
-     * @param q Question
-     * @param collection Collection des équipes
-     * @param pipeline Pipeline de la requête
-     */
-    private static void displayQuestionJson(String q, MongoCollection<Document> collection, List<Bson> pipeline) {
-        sepQ5(q);
-        displayResult(collection, pipeline);
-        sep();
-    }
-
-    /**
-     * Affiche le résultat de la requête.
-     * @param collection Collection des équipes
-     * @param pipeline Pipeline de la requête
-     */
-    private static void displayResult(MongoCollection<Document> collection, List<Bson> pipeline) {
-        for (Document doc : collection.aggregate(pipeline)) {
-            System.out.println(doc.toJson(JsonWriterSettings.builder().indent(true).build()));
-        }
-    }
-
-    /**
-     * Affiche la séparation entre les questions dans le terminal.
-     * @param q Numéro de question
-     */
-    static void sepQ5(String q) {
-        System.out.println("--- Q5." + q + " ---");
-    }
-
-    /**
-     * Affiche un séparateur dans le terminal.
-     */
-    static void sep() {
-        System.out.println("---");
     }
 }
