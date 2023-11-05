@@ -1,5 +1,5 @@
 /**
- * Hugo COLLIN - /10/2023
+ * Hugo COLLIN - 05/11/2023
  */
 
 import com.mongodb.client.model.*;
@@ -15,6 +15,11 @@ import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Sorts.descending;
 
 public class JavaMongoConnection {
+
+    /**
+     * Exécute les requêtes de la question 5.
+     * @param args Non utilisé
+     */
     public static void main(String[] args) {
         String uri = "mongodb://localhost:27017";
 
@@ -76,6 +81,12 @@ public class JavaMongoConnection {
         }
     }
 
+    /**
+     * Ajoute un arbitre à un match.
+     * @param collection Collection des équipes
+     * @param matchId Identifiant du match
+     * @param referee Arbitre à ajouter
+     */
     private static void q5k(MongoCollection<Document> collection, int matchId, Document referee) {
         Document team = collection.find(Filters.elemMatch("matchs", Filters.eq("numeroMatch", matchId))).first();
         assert team != null;
@@ -97,6 +108,10 @@ public class JavaMongoConnection {
 
     }
 
+    /**
+     * Affiche le joueur qui a marqué le plus d'essais et celui qui a marqué le plus de points.
+     * @param collection Collection des équipes
+     */
     public static void q5j(MongoCollection<Document> collection) {
         List<Bson> pipelineEssais = Arrays.asList(
                 Aggregates.unwind("$matchs"),
@@ -132,6 +147,11 @@ public class JavaMongoConnection {
         sep();
     }
 
+    /**
+     * Affiche les joueurs qui ont joué tous les matchs de leur équipe.
+     * @param collection Collection des équipes
+     * @param equipeE Équipe
+     */
     private static void q5i(MongoCollection<Document> collection, String equipeE) {
         List<Bson> pipeline = Arrays.asList(
                 Aggregates.match(Filters.eq("codeEquipe", equipeE)),
@@ -151,7 +171,11 @@ public class JavaMongoConnection {
     }
 
 
-
+    /**
+     * Affiche les joueurs qui n'ont joué aucun match de leur équipe.
+     * @param collection
+     * @param equipeE
+     */
     private static void q5h(MongoCollection<Document> collection, String equipeE) {
         // Étape 1: Obtenir une liste de tous les numéros de joueurs qui ont joué dans les matchs
         List<Integer> playerNumbersWhoPlayed = collection.aggregate(Arrays.asList(
@@ -160,9 +184,6 @@ public class JavaMongoConnection {
                 Aggregates.unwind("$matchs.performances"),
                 Aggregates.group("$matchs.performances.numeroJoueur")
         )).map(document -> document.getInteger("_id")).into(new ArrayList<>());
-
-//        playerNumbersWhoPlayed.remove(0);
-//        System.out.println(playerNumbersWhoPlayed);
 
         // Étape 2: Obtenir les joueurs qui ne sont pas dans la liste des joueurs qui ont joué
         Bson filter = Filters.and(
@@ -182,8 +203,13 @@ public class JavaMongoConnection {
     }
 
 
-
-
+    /**
+     * Affiche les joueurs de l'équipe E1 qui ont joué contre les équipes E2 et E3.
+     * @param collection Collection des équipes
+     * @param equipeE1 Équipe E1
+     * @param equipeE2 Équipe E2
+     * @param equipeE3 Équipe E3
+     */
     private static void q5g(MongoCollection<Document> collection, String equipeE1, String equipeE2, String equipeE3) {
         List<Bson> pipeline = Arrays.asList(
                 Aggregates.match(Filters.eq("codeEquipe", equipeE1)),
@@ -213,6 +239,11 @@ public class JavaMongoConnection {
     }
 
 
+    /**
+     * Affiche pour caque joueur de l'équipe E le nombre total de matchs joués, le nombre total d'essais marqués et le nombre total de points marqués.
+     * @param collection Collection des équipes
+     * @param equipeE Équipe E
+     */
     private static void q5f(MongoCollection<Document> collection, String equipeE) {
         List<Bson> pipeline = Arrays.asList(
                 Aggregates.match(Filters.eq("codeEquipe", equipeE)), // Filtrer pour l'équipe E
@@ -236,7 +267,11 @@ public class JavaMongoConnection {
         displayQuestionJson("f", collection, pipeline);
     }
 
-
+    /**
+     * Affiche le nom et le prénom des joueurs de l'équipe E qui sont entrés en cours de jeu.
+     * @param collection Collection des équipes
+     * @param equipeE Équipe E
+     */
     private static void q5e(MongoCollection<Document> collection, String equipeE) {
         List<Bson> pipeline = Arrays.asList(
                 Aggregates.match(Filters.eq("codeEquipe", equipeE)), // Filtrer pour l'équipe E
@@ -255,6 +290,13 @@ public class JavaMongoConnection {
         displayQuestionJson("e", collection, pipeline);
     }
 
+    /**
+     * Affiche tous les joueurs de l'équipe E1 qui ont débuté un match à la dateD contre l'équipe E2.
+     * @param collection Collection des équipes
+     * @param dateD Date du match
+     * @param equipeE1 Équipe E1
+     * @param equipeE2 Équipe E2
+     */
     private static void q5d(MongoCollection<Document> collection, String dateD, String equipeE1, String equipeE2) {
         List<Bson> pipeline = Arrays.asList(
             Aggregates.match(Filters.eq("codeEquipe", equipeE1)), // Filtrer pour l'équipe E1
@@ -278,6 +320,11 @@ public class JavaMongoConnection {
         displayQuestionJson("d", collection, pipeline);
     }
 
+    /**
+     * Affiche les équipes qui recevaient et qui ont été arbitrés par un arbitre A.
+     * @param collection
+     * @param arbitreA
+     */
     private static void q5c(MongoCollection<Document> collection, String arbitreA) {
         List<Bson> pipeline = Arrays.asList(
                 Aggregates.unwind("$matchs"), // Déconstruire les matchs
@@ -294,6 +341,12 @@ public class JavaMongoConnection {
         displayQuestionJson("c", collection, pipeline);
     }
 
+    /**
+     * Affiche les matchs qui ont eu lieu à la dateD et qui ont rapporté plus de points que le nombre pointsP.
+     * @param collection Collection des équipes
+     * @param dateD Date du match
+     * @param pointsP Nombre de points
+     */
     private static void q5b(MongoCollection<Document> collection, String dateD, int pointsP) {
         List<Bson> pipeline = Arrays.asList(
                 Aggregates.unwind("$matchs"), // Déconstruire les matchs
@@ -313,6 +366,13 @@ public class JavaMongoConnection {
         displayQuestionJson("b", collection, pipeline);
     }
 
+    /**
+     * Affiche pour tous les joueurs de l'équipe E : leur temps de jeu, le nombre
+     * d'essais marqués, le nombre de points marqués, et le coefficient (nombre de
+     * points/durée de jeu), par ordre décroissant du coefficient.
+     * @param collection Collection des équipes
+     * @param equipeE Équipe E
+     */
     private static void q5a(MongoCollection<Document> collection, String equipeE) {
         List<Bson> pipeline = Arrays.asList(
                 Aggregates.match(Filters.eq("codeEquipe", equipeE)), // Filtrer pour l'équipe E
