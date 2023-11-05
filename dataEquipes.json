@@ -1,283 +1,298 @@
-[
-  {
-    "_id": {
-      "$oid": "652ce7d95037a4c29206144b"
-    },
-    "codeEquipe": "FRA",
-    "pays": {
-      "codePays": "FR",
-      "nomPays": "France"
-    },
-    "couleurMaillot": "Bleu",
-    "nomEntraineur": "Fabien Galthié",
-    "joueurs": [
-      {
-        "numeroJoueur": 9,
-        "nom": "Dupont",
-        "prenom": "Antoine",
-        "poste": {
-          "numeroPoste": 1,
-          "libelle": "Demi de mêlée"
-        }
-      },
-      {
-        "numeroJoueur": 10,
-        "nom": "Ntamack",
-        "prenom": "Romain",
-        "poste": {
-          "numeroPoste": 2,
-          "libelle": "Demi d'ouverture"
-        }
-      }
-    ],
-    "matchs": [
-      {
-        "numeroMatch": 1,
-        "date": "2023-09-20",
-        "evenement": {
-          "numeroEvenement": 1,
-          "nomEvenement": "Mondial de Rugby",
-          "dateEvenement": "2023-10-15",
-          "lieuEvenement": "Stade Olympique"
-        },
-        "stade": {
-          "numeroStade": 1,
-          "nom": "Stade de France",
-          "ville": "Paris",
-          "capacite": 80000
-        },
-        "equipeRecevant": "FRA",
-        "equipeReçue": "ARG",
-        "nombrePoints": 30,
-        "nombreEssais": 2,
-        "arbitre": {
-          "numeroArbitre": 1,
-          "nom": "Bogota",
-          "prenom": "Andy",
-          "nationalite": "ENG"
-        },
-        "nombreSpectateurs": 78000,
-        "performances": [
-          {
-            "numeroJoueur": 10,
-            "tempsDeJeu": 80,
-            "essaisMarques": 1,
-            "pointsMarques": 5,
-            "debutMatch": true
-          },
-          {
-            "numeroJoueur": 12,
-            "tempsDeJeu": 75,
-            "essaisMarques": 0,
-            "pointsMarques": 0,
-            "debutMatch": true
-          },
-          {
-            "numeroJoueur": 15,
-            "tempsDeJeu": 30,
-            "essaisMarques": 0,
-            "pointsMarques": 0,
-            "debutMatch": false
-          }
-        ]
-      }
-    ]
+[{
+  "_id": {
+    "$oid": "652ce7d95037a4c29206144b"
   },
-  {
-    "_id": {
-      "$oid": "652ce9975037a4c29206144c"
-    },
-    "codeEquipe": "GER",
-    "pays": {
-      "codePays": "DE",
-      "nomPays": "Allemagne"
-    },
-    "couleurMaillot": "Blanc",
-    "nomEntraineur": "Joachim Löw",
-    "joueurs": [
-      {
-        "numeroJoueur": 7,
-        "nom": "Müller",
-        "prenom": "Thomas",
-        "poste": {
-          "numeroPoste": 3,
-          "libelle": "Attaquant"
-        }
-      },
-      {
-        "numeroJoueur": 9,
-        "nom": "Kroos",
-        "prenom": "Toni",
-        "poste": {
-          "numeroPoste": 1,
-          "libelle": "Milieu de terrain"
-        }
-      }
-    ],
-    "matchs": [
-      {
-        "numeroMatch": 1,
-        "date": "2023-09-21",
-        "evenement": {
-          "numeroEvenement": 1,
-          "nomEvenement": "Mondial de Rugby",
-          "dateEvenement": "2023-10-15",
-          "lieuEvenement": "Stade Olympique"
-        },
-        "stade": {
-          "numeroStade": 2,
-          "nom": "Allianz Arena",
-          "ville": "Munich",
-          "capacite": 75000
-        },
-        "equipeRecevant": "GER",
-        "equipeReçue": "ENG",
-        "nombrePoints": 25,
-        "nombreEssais": 3,
-        "arbitre": {
-          "numeroArbitre": 2,
-          "nom": "Garces",
-          "prenom": "Jerome",
-          "nationalite": "FRA"
-        },
-        "nombreSpectateurs": 72000,
-        "performances": [
-          {
-            "numeroJoueur": 7,
-            "tempsDeJeu": 90,
-            "essaisMarques": 2,
-            "pointsMarques": 10,
-            "debutMatch": true
-          },
-          {
-            "numeroJoueur": 9,
-            "tempsDeJeu": 85,
-            "essaisMarques": 0,
-            "pointsMarques": 5,
-            "debutMatch": true
-          }
-        ]
-      }
-    ]
+  "codeEquipe": "FRA",
+  "pays": {
+    "codePays": "FR",
+    "nomPays": "France"
   },
-  {
-    "_id": {
-      "$oid": "652ceaa75037a4c29206144d"
-    },
-    "codeEquipe": "ENG",
-    "pays": {
-      "codePays": "GB",
-      "nomPays": "Angleterre"
-    },
-    "couleurMaillot": "Blanc",
-    "nomEntraineur": "Eddie Jones",
-    "joueurs": [
-      {
-        "numeroJoueur": 10,
-        "nom": "Farrell",
-        "prenom": "Owen",
-        "poste": {
-          "numeroPoste": 2,
-          "libelle": "Demi d'ouverture"
-        }
+  "couleurMaillot": "Bleu",
+  "nomEntraineur": "Fabien Galthié",
+  "joueurs": [
+    {
+      "numeroJoueur": 9,
+      "nom": "Dupont",
+      "prenom": "Antoine",
+      "poste": {
+        "numeroPoste": 1,
+        "libelle": "Demi de mêlée"
       },
-      {
-        "numeroJoueur": 12,
-        "nom": "Tuilagi",
-        "prenom": "Manu",
-        "poste": {
-          "numeroPoste": 3,
-          "libelle": "Centre"
-        }
-      }
-    ],
-    "matchs": [
-      {
-        "numeroMatch": 1,
-        "date": "2023-09-22",
-        "evenement": {
-          "numeroEvenement": 1,
-          "nomEvenement": "Mondial de Rugby",
-          "dateEvenement": "2023-10-15",
-          "lieuEvenement": "Stade Olympique"
-        },
-        "stade": {
-          "numeroStade": 3,
-          "nom": "Twickenham Stadium",
-          "ville": "Londres",
-          "capacite": 82000
-        },
-        "equipeRecevant": "ENG",
-        "equipeReçue": "FRA",
-        "nombrePoints": 20,
-        "nombreEssais": 2,
-        "arbitre": {
-          "numeroArbitre": 3,
-          "nom": "Barnes",
-          "prenom": "Wayne",
-          "nationalite": "ENG"
-        },
-        "nombreSpectateurs": 80000,
-        "performances": [
-          {
-            "numeroJoueur": 10,
-            "tempsDeJeu": 80,
-            "essaisMarques": 1,
-            "pointsMarques": 5,
-            "debutMatch": true
-          }
-        ]
+      "tempsDeJeu": 80,
+      "nombreEssais": 1,
+      "nombrePoints": 5
+    },
+    {
+      "numeroJoueur": 10,
+      "nom": "Ntamack",
+      "prenom": "Romain",
+      "poste": {
+        "numeroPoste": 2,
+        "libelle": "Demi d'ouverture"
       },
-      {
-        "numeroMatch": 2,
-        "date": "2023-09-25",
-        "evenement": {
-          "numeroEvenement": 1,
-          "nomEvenement": "Mondial de Rugby",
-          "dateEvenement": "2023-10-15",
-          "lieuEvenement": "Stade Olympique"
+      "tempsDeJeu": 75,
+      "nombreEssais": 0,
+      "nombrePoints": 10
+    }
+  ],
+  "matchs": [
+    {
+      "numeroMatch": 1,
+      "date": "2023-09-20",
+      "evenement": {
+        "numeroEvenement": 1,
+        "nomEvenement": "Mondial de Rugby",
+        "dateEvenement": "2023-10-15",
+        "lieuEvenement": "Stade Olympique"
+      },
+      "stade": {
+        "numeroStade": 1,
+        "nom": "Stade de France",
+        "ville": "Paris",
+        "capacite": 80000
+      },
+      "equipeRecevant": "FRA",
+      "equipeReçue": "ARG",
+      "nombrePoints": 30,
+      "nombreEssais": 2,
+      "arbitre": {
+        "nom": "Bogota",
+        "prenom": "Andy",
+        "nationalite": "ENG"
+      },
+      "nombreSpectateurs": 78000,
+      "performances": [
+        {
+          "numeroJoueur": 10,
+          "tempsDeJeu": 80,
+          "essaisMarques": 1,
+          "pointsMarques": 5,
+          "debutMatch": true
         },
-        "stade": {
-          "numeroStade": 3,
-          "nom": "Twickenham Stadium",
-          "ville": "Londres",
-          "capacite": 82000
+        {
+          "numeroJoueur": 12,
+          "tempsDeJeu": 75,
+          "essaisMarques": 0,
+          "pointsMarques": 0,
+          "debutMatch": true
         },
-        "equipeRecevant": "ENG",
-        "equipeReçue": "ESP",
-        "nombrePoints": 30,
-        "nombreEssais": 4,
-        "arbitre": {
-          "numeroArbitre": 4,
-          "nom": "Garcia",
-          "prenom": "Juan",
-          "nationalite": "ESP"
+        {
+          "numeroJoueur": 15,
+          "tempsDeJeu": 30,
+          "essaisMarques": 0,
+          "pointsMarques": 0,
+          "debutMatch": false
+        }
+      ]
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "652ce9975037a4c29206144c"
+  },
+  "codeEquipe": "GER",
+  "pays": {
+    "codePays": "DE",
+    "nomPays": "Allemagne"
+  },
+  "couleurMaillot": "Blanc",
+  "nomEntraineur": "Joachim Löw",
+  "joueurs": [
+    {
+      "numeroJoueur": 7,
+      "nom": "Müller",
+      "prenom": "Thomas",
+      "poste": {
+        "numeroPoste": 3,
+        "libelle": "Attaquant"
+      },
+      "tempsDeJeu": 90,
+      "nombreEssais": 2,
+      "nombrePoints": 10
+    },
+    {
+      "numeroJoueur": 9,
+      "nom": "Kroos",
+      "prenom": "Toni",
+      "poste": {
+        "numeroPoste": 1,
+        "libelle": "Milieu de terrain"
+      },
+      "tempsDeJeu": 85,
+      "nombreEssais": 0,
+      "nombrePoints": 5
+    }
+  ],
+  "matchs": [
+    {
+      "numeroMatch": 1,
+      "date": "2023-09-21",
+      "evenement": {
+        "numeroEvenement": 1,
+        "nomEvenement": "Mondial de Rugby",
+        "dateEvenement": "2023-10-15",
+        "lieuEvenement": "Stade Olympique"
+      },
+      "stade": {
+        "numeroStade": 2,
+        "nom": "Allianz Arena",
+        "ville": "Munich",
+        "capacite": 75000
+      },
+      "equipeRecevant": "GER",
+      "equipeReçue": "ENG",
+      "nombrePoints": 25,
+      "nombreEssais": 3,
+      "arbitre": {
+        "numeroArbitre": 2,
+        "nom": "Garces",
+        "prenom": "Jerome",
+        "nationalite": "FRA"
+      },
+      "nombreSpectateurs": 72000,
+      "performances": [
+        {
+          "numeroJoueur": 7,
+          "tempsDeJeu": 90,
+          "essaisMarques": 2,
+          "pointsMarques": 10,
+          "debutMatch": true
         },
-        "nombreSpectateurs": 80000,
-        "performances": [
-          {
-            "numeroJoueur": 8,
-            "tempsDeJeu": 90,
-            "essaisMarques": 2,
-            "pointsMarques": 10,
-            "debutMatch": true
-          },
-          {
-            "numeroJoueur": 10,
-            "tempsDeJeu": 85,
-            "essaisMarques": 0,
-            "pointsMarques": 5,
-            "debutMatch": false
-          },
-          {
-            "numeroJoueur": 13,
-            "tempsDeJeu": 35,
-            "essaisMarques": 1,
-            "pointsMarques": 5,
-            "debutMatch": false
-          }
-        ]
-      }
-    ]
-  }
-]
+        {
+          "numeroJoueur": 9,
+          "tempsDeJeu": 85,
+          "essaisMarques": 0,
+          "pointsMarques": 5,
+          "debutMatch": true
+        }
+      ]
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "652ceaa75037a4c29206144d"
+  },
+  "codeEquipe": "ENG",
+  "pays": {
+    "codePays": "GB",
+    "nomPays": "Angleterre"
+  },
+  "couleurMaillot": "Blanc",
+  "nomEntraineur": "Eddie Jones",
+  "joueurs": [
+    {
+      "numeroJoueur": 10,
+      "nom": "Farrell",
+      "prenom": "Owen",
+      "poste": {
+        "numeroPoste": 2,
+        "libelle": "Demi d'ouverture"
+      },
+      "tempsDeJeu": 80,
+      "nombreEssais": 1,
+      "nombrePoints": 5
+    },
+    {
+      "numeroJoueur": 12,
+      "nom": "Tuilagi",
+      "prenom": "Manu",
+      "poste": {
+        "numeroPoste": 3,
+        "libelle": "Centre"
+      },
+      "tempsDeJeu": 75,
+      "nombreEssais": 0,
+      "nombrePoints": 0
+    }
+  ],
+  "matchs": [
+    {
+      "numeroMatch": 1,
+      "date": "2023-09-22",
+      "evenement": {
+        "numeroEvenement": 1,
+        "nomEvenement": "Mondial de Rugby",
+        "dateEvenement": "2023-10-15",
+        "lieuEvenement": "Stade Olympique"
+      },
+      "stade": {
+        "numeroStade": 3,
+        "nom": "Twickenham Stadium",
+        "ville": "Londres",
+        "capacite": 82000
+      },
+      "equipeRecevant": "ENG",
+      "equipeReçue": "FRA",
+      "nombrePoints": 20,
+      "nombreEssais": 2,
+      "arbitre": {
+        "numeroArbitre": 3,
+        "nom": "Barnes",
+        "prenom": "Wayne",
+        "nationalite": "ENG"
+      },
+      "nombreSpectateurs": 80000,
+      "performances": [
+        {
+          "numeroJoueur": 10,
+          "tempsDeJeu": 80,
+          "essaisMarques": 1,
+          "pointsMarques": 5,
+          "debutMatch": true
+        }
+      ]
+    },
+    {
+      "numeroMatch": 2,
+      "date": "2023-09-25",
+      "evenement": {
+        "numeroEvenement": 1,
+        "nomEvenement": "Mondial de Rugby",
+        "dateEvenement": "2023-10-15",
+        "lieuEvenement": "Stade Olympique"
+      },
+      "stade": {
+        "numeroStade": 3,
+        "nom": "Twickenham Stadium",
+        "ville": "Londres",
+        "capacite": 82000
+      },
+      "equipeRecevant": "ENG",
+      "equipeReçue": "ESP",
+      "nombrePoints": 30,
+      "nombreEssais": 4,
+      "arbitre": {
+        "numeroArbitre": 4,
+        "nom": "Garcia",
+        "prenom": "Juan",
+        "nationalite": "ESP"
+      },
+      "nombreSpectateurs": 80000,
+      "performances": [
+        {
+          "numeroJoueur": 8,
+          "tempsDeJeu": 90,
+          "essaisMarques": 2,
+          "pointsMarques": 10,
+          "debutMatch": true
+        },
+        {
+          "numeroJoueur": 10,
+          "tempsDeJeu": 85,
+          "essaisMarques": 0,
+          "pointsMarques": 5,
+          "debutMatch": false
+        },
+        {
+          "numeroJoueur": 13,
+          "tempsDeJeu": 35,
+          "essaisMarques": 1,
+          "pointsMarques": 5,
+          "debutMatch": false
+        }
+      ]
+    }
+  ]
+}]
